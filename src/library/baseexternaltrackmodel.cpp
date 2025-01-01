@@ -6,6 +6,7 @@
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackcollectionmanager.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_baseexternaltrackmodel.cpp"
 #include "track/track.h"
