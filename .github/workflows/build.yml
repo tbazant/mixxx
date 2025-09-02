@@ -417,7 +417,7 @@ jobs:
         # also generates metadata for file artifact and write it to the job
         # output using the artifacts_slug value.
         id: prepare_deploy
-        if: inputs.publish && matrix.artifacts_path != null
+        if: matrix.artifacts_path != null
         shell: bash
         run: >
           export DEPLOY_PATH='releases/{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
@@ -433,7 +433,7 @@ jobs:
       - name: "[Windows] Install rsync and openssh"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
-        if: runner.os == 'Windows' && inputs.publish && env.SSH_PRIVATE_KEY != null
+        if: runner.os == 'Windows' && env.SSH_PRIVATE_KEY != null
         run: |
           $Env:PATH="c:\msys64\usr\bin;$Env:PATH"
           pacman -S --noconfirm coreutils bash rsync openssh
@@ -462,7 +462,7 @@ jobs:
           Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
       - name: "Set up SSH Agent"
-        if: inputs.publish && env.SSH_PRIVATE_KEY != null
+        if: env.SSH_PRIVATE_KEY != null
         shell: bash
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -477,7 +477,7 @@ jobs:
 
       - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
         # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-        if: runner.os != 'Linux' && inputs.publish && env.SSH_AUTH_SOCK != null
+        if: runner.os != 'Linux' && env.SSH_AUTH_SOCK != null
         shell: bash --login -eo pipefail "{0}"
         run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:
@@ -524,7 +524,7 @@ jobs:
       - name: "Collect Artifacts Metadata & Write Manifest"
         # Retrieve the metadata from the matrix job's outputs, merge them into a
         # single JSON document and then deploy to the server.
-        if: inputs.publish && env.SSH_PASSWORD != null
+        if: env.SSH_PASSWORD != null
         run: >
           export DEPLOY_PATH='releases/{git_describe}/manifest.json';
           python3 tools/deploy.py generate-manifest
@@ -537,7 +537,7 @@ jobs:
           SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
 
       - name: "Set up SSH Agent"
-        if: inputs.publish && env.SSH_PRIVATE_KEY != null  && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
+        if: env.SSH_PRIVATE_KEY != null  && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
         shell: bash
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -551,7 +551,7 @@ jobs:
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
       - name: "Deploy Manifest"
-        if: inputs.publish && env.SSH_AUTH_SOCK != null
+        if: env.SSH_AUTH_SOCK != null
         shell: bash
         run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:
