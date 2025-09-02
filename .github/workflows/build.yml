@@ -161,6 +161,7 @@ jobs:
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
+          ref: "2.5.4"
 
       - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
         if: matrix.container != null
@@ -380,18 +381,7 @@ jobs:
         # No need to do the PPA build for both Ubuntu versions
         if: matrix.name == 'Ubuntu 22.04'
         run: |
-          if [[ "${{ inputs.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
-          elif [[ "${{ inputs.ref }}" == "refs/heads/2.6" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
-          elif [[ "${{ inputs.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
-          elif [[ "${{ inputs.ref }}" == "refs/heads/2.5" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxpatches"
-          else
-            # only build the source DEB, do not upload
-            CPACK_ARGS="-D DEB_SOURCEPKG=ON"
-          fi
+          CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
           cpack -G External $CPACK_ARGS
         working-directory: build
 
@@ -430,12 +420,7 @@ jobs:
         if: inputs.publish && matrix.artifacts_path != null
         shell: bash
         run: >
-          if [[ "${{ inputs.ref }}" =~ ^refs/tags/.* ]];
-          then
-            export DEPLOY_PATH='releases/{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
-          else
-            export DEPLOY_PATH='snapshots/{git_branch}/mixxx-{git_describe}-{package_slug}{ext}';
-          fi;
+          export DEPLOY_PATH='releases/{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
           python3 tools/deploy.py prepare-deployment
           --slug '${{ matrix.artifacts_slug }}'
           --output-dir 'deploy/'
@@ -528,6 +513,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          ref: "2.5.4"
 
       - name: "Ensure that all tags are fetched"
         # Works around an issue where not the latest tag is not fetched when the
@@ -540,12 +526,7 @@ jobs:
         # single JSON document and then deploy to the server.
         if: inputs.publish && env.SSH_PASSWORD != null
         run: >
-          if [[ "${{ inputs.ref }}" =~ ^refs/tags/.* ]];
-          then
-            export DEPLOY_PATH='releases/{git_describe}/manifest.json';
-          else
-            export DEPLOY_PATH='snapshots/{git_branch}/manifest.json';
-          fi;
+          export DEPLOY_PATH='releases/{git_describe}/manifest.json';
           python3 tools/deploy.py generate-manifest
           --update
           --output-dir 'deploy/'
