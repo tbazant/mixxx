@@ -149,7 +149,24 @@ DlgAbout::DlgAbout()
             << "Owen Turnbull"
             << "Benjamin Paker"
             << "J&eacute;r&ocirc;me Froissart"
-            << "Harshit Singh Hada";
+            << "Harshit Singh Hada"
+            << "Andrej Lajovic"
+            << "Pri-yan-shu"
+            << "Graham Hall"
+            << "Ayush Sah"
+            << "fixxiefixx"
+            << "Greg-Orca"
+            << "Iron-Wolf"
+            << "Tom&aacute;&scaron; Ba&#382;ant"
+            << "Serveny"
+            << "Robert Hendrickx"
+            << "Rishabh Saini"
+            << "J&eacute;r&ocirc;me Froissart"
+            << "Daniel Kinahan"
+            << "Anuj Nayak"
+            << "Jeff Magill"
+            << "Michael Scherer"
+            << "Simon Tegelid";
 
     QStringList specialThanks;
     specialThanks
