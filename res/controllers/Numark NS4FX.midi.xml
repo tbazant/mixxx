@@ -47,6 +47,13 @@
                 label="Control stems effects with EQ knobs"
                 description="When enabled, the EQ knobs of decks 3 and 4 control stem effects of decks 1 and 2."/>
         </group>
+        <group label="Performance Pads - Auto Loop Beat Jump">
+            <option type="boolean" variable="useAutoLoopBeatJump" label="Control beat jump with Auto Loop second row pads" default="false" description="When enabled, the bottom row of transport pads (CUE, START, BACK, FWD) will control beat jump (back, dec, inc, fwd) when the pad mode is set to 'Auto Loop'."/>
+            <option type="integer" variable="shiftPad5JumpBeats" min="-512" max="512" default="-4" description="Shift Auto Loop Jump size key 5"/>
+            <option type="integer" variable="shiftPad6JumpBeats" min="-512" max="512" default="-1" description="Shift Auto Loop Jump size key 6"/>
+            <option type="integer" variable="shiftPad7JumpBeats" min="-512" max="512" default="1" description="Shift Auto Loop Jump size key 7"/>
+            <option type="integer" variable="shiftPad8JumpBeats" min="-512" max="512" default="4" description="Shift Auto Loop Jump size key 8"/>
+        </group>
     </settings>
     <controller id="NS4FX">
         <scriptfiles>
