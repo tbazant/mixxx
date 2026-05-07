@@ -184,6 +184,8 @@ const createStemEffectPadConfig = function(deckInstance, padStateProperty, stemN
                     engine.setValue(quickEffectGroup, "enabled", !currentEffectState);
                 }
                 padState.isHeldForEffectVolume = false;
+                // Also reset the effect selector hold state on release.
+                padState.isHeldForEffectSelector = false;
             }
         }
     };
