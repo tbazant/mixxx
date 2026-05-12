@@ -1,7 +1,7 @@
 /**
  * The main controller object.
  */
-function NS4FX() {};
+function NS4FX() { };
 
 /******************
  * CONFIG OPTIONS *
@@ -328,7 +328,7 @@ NS4FX.init = function(id, debug) {
                         break;
                     }
                 }
-                if (heldStemInfo) { break; }
+                if (heldStemInfo) {break;}
             }
             if (heldStemInfo) {
                 let controlSuffix;
@@ -544,7 +544,7 @@ NS4FX.init = function(id, debug) {
                 // When a deck's BPM changes, update its arrows and its opposite's arrows.
                 NS4FX.updateBpmArrows(deckNum);
                 let oppositeDeckNum;
-                if (deckNum === 1) { oppositeDeckNum = 2; } else if (deckNum === 2) { oppositeDeckNum = 1; } else if (deckNum === 3) { oppositeDeckNum = 4; } else if (deckNum === 4) { oppositeDeckNum = 3; }
+                if (deckNum === 1) {oppositeDeckNum = 2;} else if (deckNum === 2) {oppositeDeckNum = 1;} else if (deckNum === 3) {oppositeDeckNum = 4;} else if (deckNum === 4) {oppositeDeckNum = 3;}
                 NS4FX.updateBpmArrows(oppositeDeckNum);
             });
         })(i);
@@ -660,7 +660,7 @@ NS4FX.EffectUnit = function() {
 
     this.toggleEffect = function(effectName) {
         const effect = this.effects.find(e => e.name === effectName);
-        if (!effect) { return; }
+        if (!effect) {return;}
 
         const group = `[EffectRack1_EffectUnit${effect.unit}_Effect${this.effects.filter(e => e.unit === effect.unit).indexOf(effect) + 1}]`;
 
@@ -857,7 +857,12 @@ NS4FX.Deck = function(number, midi_chan) {
      * to ensure the EQs are correctly mapped for the current context.
      */
     this.updateEQs = function() {
-        if (useEQs34asStemEffects && (deck.number === 3 || deck.number === 4)) {
+        const isStemEffectMode = useEQs34asStemEffects &&
+            (deck.number === 3 || deck.number === 4) &&
+            (!engine.getValue(deck.currentDeck, "track_loaded") ||
+                engine.getValue(deck.currentDeck, "passthrough"));
+
+        if (isStemEffectMode) {
             const targetDeckNumber = deck.number - 2;
             NS4FX.dbg(`Deck ${deck.number} is controlling stem effects for Deck ${targetDeckNumber}`);
 
@@ -937,7 +942,7 @@ NS4FX.Deck = function(number, midi_chan) {
                     // Denominator for the softmax calculation. Drums and bass are weighted together.
                     const denominator = exp_zv + exp_zm + 2 * exp_zd;
 
-                    if (denominator === 0) { return; } // Avoid division by zero.
+                    if (denominator === 0) {return;} // Avoid division by zero.
 
                     const volumes = {
                         v_v: exp_zv / denominator,
@@ -1099,7 +1104,7 @@ NS4FX.Deck = function(number, midi_chan) {
             // To prevent this, we disconnect the buttons, wait for the engine state to settle,
             // then reconnect and perform a manual update.
             if (deck.padmode_str === "hotcue") {
-                deck.hotcues.forEachComponent(function(c) { c.disconnect(); });
+                deck.hotcues.forEachComponent(function(c) {c.disconnect();});
             }
 
             engine.beginTimer(50, function() {
@@ -1663,15 +1668,15 @@ NS4FX.Deck = function(number, midi_chan) {
     this.pitch_bend_up = new components.Button({
         inKey: "rate_temp_up",
         input: pitch_button_handler,
-        shift: function() { this.inKey = "pitch_up"; },
-        unshift: function() { this.inKey = "rate_temp_up"; },
+        shift: function() {this.inKey = "pitch_up";},
+        unshift: function() {this.inKey = "rate_temp_up";},
     });
 
     this.pitch_bend_down = new components.Button({
         inKey: "rate_temp_down",
         input: pitch_button_handler,
-        shift: function() { this.inKey = "pitch_down"; },
-        unshift: function() { this.inKey = "rate_temp_down"; },
+        shift: function() {this.inKey = "pitch_down";},
+        unshift: function() {this.inKey = "rate_temp_down";},
     });
 
     this.pitch_bend_up.other = this.pitch_bend_down;
@@ -2032,8 +2037,8 @@ NS4FX.Deck = function(number, midi_chan) {
         };
     };
     this.updateEQs();
-    engine.makeConnection(this.currentDeck, "track_loaded", function() { deck.updateEQs(); });
-    engine.makeConnection(this.currentDeck, "passthrough", function() { deck.updateEQs(); });
+    engine.makeConnection(this.currentDeck, "track_loaded", function() {deck.updateEQs();});
+    engine.makeConnection(this.currentDeck, "passthrough", function() {deck.updateEQs();});
 };
 
 NS4FX.Deck.prototype = new components.Deck();
@@ -2158,8 +2163,8 @@ NS4FX.encodeNumToArray = function(number) {
     ];
 
     // Manually set the first nibble to indicate the sign.
-    if (isNegative) { number_array[0] = 0x07; } // Sign nibble for negative
-    else { number_array[0] = 0x08; } // Sign nibble for positive
+    if (isNegative) {number_array[0] = 0x07;} // Sign nibble for negative
+    else {number_array[0] = 0x08;} // Sign nibble for positive
 
     return number_array;
 };
@@ -2283,12 +2288,12 @@ NS4FX.timeMs = function(_deck, position, duration) {
 NS4FX.scratch_timer = []; // initialized before use (null is an acceptable value)
 NS4FX.scratch_tick = [];  // initialized before use
 NS4FX.resetScratchTimer = function(deck, tick) {
-    if (!NS4FX.scratch_timer[deck]) { return; }
+    if (!NS4FX.scratch_timer[deck]) {return;}
     NS4FX.scratch_tick[deck] = tick;
 };
 
 NS4FX.startScratchTimer = function(deck) {
-    if (NS4FX.scratch_timer[deck]) { return; }
+    if (NS4FX.scratch_timer[deck]) {return;}
 
     NS4FX.scratch_tick[deck] = 0;
     NS4FX.scratch_timer[deck] = engine.beginTimer(20, () => {
@@ -2403,8 +2408,8 @@ NS4FX.wheelTurn = function(channel, _control, value, _status, group) {
     // detect searching the track
     if (NS4FX.searching[deck]) {
         let position = engine.getValue(group, "playposition");
-        if (position <= 0) { position = 0; }
-        if (position >= 1) { position = 1; }
+        if (position <= 0) {position = 0;}
+        if (position >= 1) {position = 1;}
         engine.setValue(group, "playposition", position + newValue * 0.0001);
         NS4FX.resetScratchTimer(deck, newValue);
         return;
@@ -2449,13 +2454,13 @@ NS4FX.wheelTurn = function(channel, _control, value, _status, group) {
 
 NS4FX.wheel = []; // initialized in the NS4FX.init() function
 NS4FX.wheelToggle = function(channel, _control, value, _status, _group) {
-    if (value !== 0x7F) { return; }
+    if (value !== 0x7F) {return;}
     if (NS4FX.shift) {
         NS4FX.elapsedToggle();
     } else {
         NS4FX.wheel[channel] = !NS4FX.wheel[channel];
         let on_off = 0x01;
-        if (NS4FX.wheel[channel]) { on_off = 0x7F; }
+        if (NS4FX.wheel[channel]) {on_off = 0x7F;}
         midi.sendShortMsg(0x90 | channel, 0x07, on_off);
     }
 };
