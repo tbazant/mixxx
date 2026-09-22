@@ -11,7 +11,7 @@ const ShiftLoadEjects = engine.getSetting("ShiftLoadEjects");
 const OnlyActiveDeckEffect = engine.getSetting("OnlyActiveDeckEffect");
 const displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
 const defaultPadMode = engine.getSetting("defaultPadMode");
-const useFadercutsAsStems = engine.getSetting("useFadercutsAsStems");
+const useScratchbanksAsStems = engine.getSetting("useScratchbanksAsStems");
 const useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
 const exitSlipmodeAfterScratching = engine.getSetting("exitSlipmodeAfterScratching");
 const useEQsAs = engine.getSetting("useEQsAs");
@@ -24,6 +24,17 @@ const shiftAutoloopJump = [
     parseInt(engine.getSetting("shiftPad7JumpBeats")),
     parseInt(engine.getSetting("shiftPad8JumpBeats"))
 ]
+const parsePattern = function(settingVal) {
+    const parts = settingVal.indexOf(",") !== -1 ? settingVal.split(",") : settingVal.split("");
+    return parts.map(Number);
+};
+const fadercutPatterns = [
+    null,
+    parsePattern(engine.getSetting("fadercutsPad1")),
+    parsePattern(engine.getSetting("fadercutsPad2")),
+    parsePattern(engine.getSetting("fadercutsPad3")),
+    parsePattern(engine.getSetting("fadercutsPad4"))
+];
 
 /**
  * Creates a configuration object for a performance pad to be used for stem control.
@@ -225,7 +236,7 @@ const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
         input: function(channel, control, value, status, group) {
             // If we're using fadercuts for stems, and the current pad mode is stems,
             // these pads are handled by the stem effect buttons, so we delegate the event.
-            if (useFadercutsAsStems && deck.padmode_str === "stems") {
+            if (useScratchbanksAsStems && deck.padmode_str === "stems") {
                 if (deck.stems_buttons[padNumber + 4]) {
                     deck.stems_buttons[padNumber + 4].input(channel, control, value, status, group);
                 }
@@ -307,7 +318,7 @@ NS4FX.init = function(id, debug) {
 
     NS4FX.id = id;
 
-    NS4FX.dbg(`useFadercutsAsStems is ${useFadercutsAsStems}`);
+    NS4FX.dbg(`useScratchbanksAsStems is ${useScratchbanksAsStems}`);
 
     // This component handles the BEATS knob.
     // When a stem pad is held, this knob adjusts the stem's volume (or effect amount if SHIFT is also held).
@@ -405,20 +416,20 @@ NS4FX.init = function(id, debug) {
         }
     });
     // This component handles the crossfader.
-    // It's necessary because the NS4FX sends hardware-level fader cut MIDI messages
-    // when the Fader Cuts pad mode is active. We need to intercept and ignore these
-    // messages when we are using that mode for stem control.
+    // We only ignore incoming crossfader messages while a fader cut pattern is actively running
+    // (in case the controller hardware emits crossfader CCs during pad cuts).
     NS4FX.crossfader = new components.Pot({
+        midi: [0xBF, 0x08],
         group: "[Master]",
         inKey: "crossfader",
-        input: function(channel, control, value, status, group) {
-            if (useFadercutsAsStems) {
-                if (NS4FX.decks[1].padmode_str === "stems" || NS4FX.decks[2].padmode_str === "stems" || NS4FX.decks[3].padmode_str === "stems" || NS4FX.decks[4].padmode_str === "stems") {
-                    return; // In stems mode, so do nothing.
-                }
+        softTakeover: false,
+        input: function(_channel, _control, value, _status, _group) {
+            if (NS4FX.activeFaderCut) {
+                NS4FX.dbg("[CROSSFADER] Active fader cut in progress, ignoring crossfader movement.");
+                return;
             }
-            // If not in stems mode, process the crossfader movement as normal.
-            components.Pot.prototype.input.call(this, channel, control, value, status, group);
+            NS4FX.dbg(`[CROSSFADER] Crossfader moved: raw=${value}, norm=${(value / 127).toFixed(3)}`);
+            engine.setParameter("[Master]", "crossfader", value / 127);
         }
     });
 
@@ -846,7 +857,7 @@ NS4FX.Deck = function(number, midi_chan) {
 
     // If using stems, create state objects for each pad to track hold timers and states.
     // This is necessary for the hold-for-volume/effect functionality.
-    if (useFadercutsAsStems) {
+    if (useScratchbanksAsStems) {
         // Add isHeldForEffectSelector to track the new SHIFT+hold state.
         this.stemPad1 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
         this.stemPad2 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
@@ -1411,13 +1422,37 @@ NS4FX.Deck = function(number, midi_chan) {
     });
     this.fadercuts_buttons = new components.ComponentContainer({
         updateLEDs: function(_deckGroup) {
-            for (const button in deck.fadercuts_buttons) {
-                if (deck.fadercuts_buttons[button] instanceof components.Button) {
-                    deck.fadercuts_buttons[button].output(0);
+            for (let i = 1; i <= 4; ++i) {
+                if (deck.fadercuts_buttons[i]) {
+                    deck.fadercuts_buttons[i].output(0);
                 }
             }
         }
     });
+
+    for (let i = 1; i <= 4; ++i) {
+        const midiNote = 0x13 + i;
+        this.fadercuts_buttons[i] = new components.Button({
+            midi: [0x94 + midi_chan, midiNote],
+            number: i,
+            output: function(value) {
+                midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01); // LED on/off
+            },
+            input: function(_channel, _control, value, _status) {
+                if (deck.padmode_str !== "fadercuts") {
+                    return;
+                }
+                    if (value === 0x7F) {
+                    NS4FX.dbg(`[FADERCUTS] Deck ${deck.number} Pad ${this.number} Pressed`);
+                    NS4FX.startFaderCuts(deck.number, this.number);
+                } else {
+                    NS4FX.dbg(`[FADERCUTS] Deck ${deck.number} Pad ${this.number} Released`);
+                    NS4FX.stopFaderCuts(deck.number);
+                }
+                this.output(value === 0x7F ? 1 : 0);
+            }
+        });
+    }
     this.autoloop_buttons = new components.ComponentContainer({
         updateLEDs: function(deckGroup) {
             for (const button in deck.autoloop_buttons) { // Iterate directly over autoloop_buttons
@@ -1579,57 +1614,6 @@ NS4FX.Deck = function(number, midi_chan) {
             transportPadNumber: 5 - i // Stores the transport button number (1-4)
         });
 
-        if (!useFadercutsAsStems) {
-            this.fadercuts_buttons[5 - i] = new components.Button({
-                midi: [0x94 + midi_chan, 0x18 - i], // Example MIDI addresses
-                input: function(_channel, _control, value, _status) {
-                    if (deck.padmode_str !== "fadercuts") {
-                        return;
-                    }
-
-                    const deckGroup = `[Channel${deck.number}]`; // Deck group based on deck number
-
-                    if (value === 0x7F) { // Button pressed
-                        const bpm = engine.getValue(deckGroup, "bpm"); // Get the BPM of the track
-                        const baseInterval = (60 / bpm) * 1000 / 4; // Calculate the duration of a beat in milliseconds
-
-                        // Speed based on button number (e.g., faster for higher numbers)
-                        const speedMultiplier = this.number; // Button 1 = slow, Button 4 = fast
-                        const interval = baseInterval / speedMultiplier; // Adjust speed
-                        print(`BPM=${bpm}, Base Interval=${baseInterval}ms, Speed Multiplier=${speedMultiplier}, Final Interval=${interval}ms`);
-                        this.startFaderCuts(deckGroup, interval); // Start cuts with calculated speed
-                        this.output(1); // Activate LED
-                    } else {
-                        this.stopFaderCuts(deckGroup); // Stop fader cuts
-                        this.output(0); // Deactivate LED
-                    }
-                },
-                output: function(value) {
-                    midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01); // LED on/off
-                },
-                startFaderCuts: function(deckGroup, interval) {
-                    let toggle = false;
-
-                    this.faderCutInterval = engine.beginTimer(interval, () => {
-                        toggle = !toggle;
-                        const newVolume = toggle ? 1 : 0; // Switch between full volume and silence
-                        print(`Toggle=${toggle}, New Volume=${newVolume}`);
-                        engine.setValue(deckGroup, "volume", newVolume);
-                    });
-                    print(`Timer started with interval ${interval}ms`);
-                },
-                stopFaderCuts: function(deckGroup) {
-                    if (this.faderCutInterval) {
-                        engine.stopTimer(this.faderCutInterval);
-                        this.faderCutInterval = null;
-                    }
-
-                    engine.setValue(deckGroup, "volume", 1);
-                    print(`Resetting volume for ${deckGroup} to 1`);
-                },
-                number: i
-            });
-        }
 
         const rollDuration = Math.pow(2, -(i)); // Calculates the loop roll duration (0.5, 0.25, 0.125, 0.0625)
         const rollDurationString = rollDuration.toFixed(4).replace(/0+$/, "");
@@ -1667,6 +1651,9 @@ NS4FX.Deck = function(number, midi_chan) {
         if (this.padmode_str === padmode) {
             return;
         }
+        if (this.padmode_str === "fadercuts") {
+            NS4FX.stopFaderCuts(this.number);
+        }
         NS4FX.dbg(`Deck ${this.number} change_padmode: from ${this.padmode_str} to ${padmode}`);
         this.padmode_str = padmode;
         // This is the main pad mode switching logic.
@@ -1683,6 +1670,9 @@ NS4FX.Deck = function(number, midi_chan) {
             buttons = this.autoloop_buttons;
         } else if (padmode === "fadercuts") {
             deck.fadercuts_buttons.updateLEDs(`[Channel${this.number}]`);
+            for (let p = 0x18; p <= 0x1B; p++) {
+                midi.sendShortMsg(0x94 + this.midi_chan, p, 0x01);
+            }
             buttons = this.fadercuts_buttons;
         } else if (padmode === "stems") {
             // When switching to stems mode, set the active pads to the stems_buttons container.
@@ -1716,10 +1706,10 @@ NS4FX.Deck = function(number, midi_chan) {
             this.padMode.pad_pitchplay.output(padmode === "pitchplay" ? 1 : 0);
             this.padMode.pad_autoloop.output(padmode === "autoloop" ? 1 : 0);
             this.padMode.pad_roll.output(padmode === "roll" ? 1 : 0);
-            this.padMode.pad_fadercuts.output(padmode === "stems" || padmode === "fadercuts" ? 1 : 0);
+            this.padMode.pad_fadercuts.output(padmode === "fadercuts" ? 1 : 0);
             this.padMode.pad_slicer.output(padmode === "slicer" ? 1 : 0);
             this.padMode.pad_sampler.output(padmode === "sampler" ? 1 : 0);
-            this.padMode.pad_scratchbanks.output(padmode === "scratchbanks" ? 1 : 0);
+            this.padMode.pad_scratchbanks.output((padmode === "stems" || padmode === "scratchbanks") ? 1 : 0);
         }
     };
     this.hotcues = new components.ComponentContainer();
@@ -1835,7 +1825,7 @@ NS4FX.Deck = function(number, midi_chan) {
     this.key_down.other = this.key_up;
 
     this.stems_buttons = new components.ComponentContainer();
-    if (useFadercutsAsStems) {
+    if (useScratchbanksAsStems) {
         for (let i = 1; i <= 4; ++i) {
             this.stems_buttons[i] = new components.Button(createStemPadConfig(deck, `stemPad${i}`, i, {
                 channel: midi_chan,
@@ -1890,15 +1880,7 @@ NS4FX.Deck = function(number, midi_chan) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
-                    // If useFadercutsAsStems is true, this button activates "stems" mode.
-                    // Otherwise, it activates the normal "fadercuts" mode.
-                    if (useFadercutsAsStems) {
-                        ;
-                        NS4FX.dbg(`Switching to stems mode on deck ${deck.number}`);
-                        deck.change_padmode("stems");
-                    } else {
                         deck.change_padmode("fadercuts");
-                    }
                 }
             },
             output: function(value) {
@@ -1963,7 +1945,12 @@ NS4FX.Deck = function(number, midi_chan) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
-                    deck.change_padmode("scratchbanks");
+                    if (useScratchbanksAsStems) {
+                        NS4FX.dbg(`Switching to stems mode on deck ${deck.number}`);
+                        deck.change_padmode("stems");
+                    } else {
+                        deck.change_padmode("scratchbanks");
+                    }
                 }
             },
             output: function(value) {
@@ -2187,6 +2174,124 @@ NS4FX.Sampler = function(base) {
             loaded: 0x00,
             playing: 0x7F,
         });
+    }
+};
+
+
+NS4FX.faderCutTimer = null;
+NS4FX.faderCutStartTimer = null;
+NS4FX.activeFaderCut = null;
+NS4FX.faderCutStep = 0;
+
+NS4FX.getFaderCutsInterval = function(effectiveBpm) {
+    // 1 beat = 60,000 / effectiveBpm ms.
+    // 12 steps per beat -> interval = 60,000 / (12 * effectiveBpm) = 5,000 / effectiveBpm ms.
+    return 5000 / effectiveBpm;
+};
+
+NS4FX.startFaderCuts = function(deckNum, padNumber) {
+    NS4FX.dbg(`[FADERCUTS] startFaderCuts called for Deck ${deckNum}, Pad ${padNumber}`);
+    
+    // Stop any running fader cuts timer first
+    NS4FX.stopFaderCuts(deckNum);
+
+    const deck = NS4FX.decks[deckNum];
+    if (!deck) {
+        NS4FX.dbg(`[FADERCUTS] Error: Deck ${deckNum} not found.`);
+        return;
+    }
+
+    // Register active cut state immediately so hardware crossfader CCs are suppressed
+    NS4FX.activeFaderCut = {
+        deckNumber: deckNum,
+        padNumber: padNumber
+    };
+    NS4FX.faderCutStep = 0;
+
+    // Save current volume fader level before cutting
+    const currentVol = engine.getValue(deck.currentDeck, "volume");
+    deck.faderCutSavedVolume = (currentVol > 0) ? currentVol : 1.0;
+    NS4FX.dbg(`[FADERCUTS] Saved volume for ${deck.currentDeck}: ${deck.faderCutSavedVolume.toFixed(3)}`);
+
+    // Ensure the deck is playing
+    const isPlaying = engine.getValue(deck.currentDeck, "play");
+    if (!isPlaying) {
+        NS4FX.dbg(`[FADERCUTS] Deck ${deck.currentDeck} is not playing. Starting playback.`);
+        engine.setValue(deck.currentDeck, "play", 1);
+    }
+
+    // Get BPM directly from this deck
+    const deckBpm = engine.getValue(deck.currentDeck, "bpm") || engine.getValue(deck.currentDeck, "local_bpm") || 120;
+    const effectiveBpm = Math.max(20, deckBpm);
+    NS4FX.dbg(`[FADERCUTS] Deck ${deckNum} BPM: ${deckBpm.toFixed(2)}, Effective BPM: ${effectiveBpm.toFixed(2)}`);
+
+        // Determine pattern and interval
+    const pattern = fadercutPatterns[padNumber];
+    if (!pattern) {
+        NS4FX.dbg(`[FADERCUTS] Error: No pattern found for pad ${padNumber}`);
+        NS4FX.activeFaderCut = null;
+        return;
+    }
+
+    const interval_ms = NS4FX.getFaderCutsInterval(effectiveBpm);
+    NS4FX.dbg(`[FADERCUTS] Pad ${padNumber} interval = ${interval_ms.toFixed(2)} ms (12 fields per beat)`);
+
+    const startCutting = function() {
+        NS4FX.faderCutStartTimer = null;
+        const val = pattern[NS4FX.faderCutStep];
+        engine.setValue(deck.currentDeck, "volume", val === 1 ? deck.faderCutSavedVolume : 0.0);
+        NS4FX.faderCutStep = (NS4FX.faderCutStep + 1) % pattern.length;
+
+        NS4FX.faderCutTimer = engine.beginTimer(interval_ms, () => {
+            const stepVal = pattern[NS4FX.faderCutStep];
+            engine.setValue(deck.currentDeck, "volume", stepVal === 1 ? deck.faderCutSavedVolume : 0.0);
+            NS4FX.faderCutStep = (NS4FX.faderCutStep + 1) % pattern.length;
+        });
+    };
+
+    const isQuantize = engine.getValue(deck.currentDeck, "quantize");
+    if (isQuantize && isPlaying && deckBpm > 0) {
+        const beatDistance = engine.getValue(deck.currentDeck, "beat_distance");
+        const remainingFraction = 1.0 - beatDistance;
+        if (remainingFraction <= 0.02 || remainingFraction >= 0.98) {
+            startCutting();
+        } else {
+            const delay_ms = Math.round(remainingFraction * (60000 / deckBpm));
+            NS4FX.dbg(`[FADERCUTS] Quantize active. Delaying start by ${delay_ms} ms to hit next beat`);
+            NS4FX.faderCutStartTimer = engine.beginTimer(delay_ms, startCutting, true);
+        }
+    } else {
+        startCutting();
+    }
+};
+
+NS4FX.stopFaderCuts = function(deckNum) {
+    NS4FX.dbg(`[FADERCUTS] stopFaderCuts called for Deck ${deckNum}`);
+    if (!deckNum && NS4FX.activeFaderCut) {
+        deckNum = NS4FX.activeFaderCut.deckNumber;
+    }
+    if (NS4FX.faderCutStartTimer) {
+        engine.stopTimer(NS4FX.faderCutStartTimer);
+        NS4FX.faderCutStartTimer = null;
+        NS4FX.dbg("[FADERCUTS] Start timer stopped.");
+    }
+    if (NS4FX.faderCutTimer) {
+        engine.stopTimer(NS4FX.faderCutTimer);
+        NS4FX.faderCutTimer = null;
+        NS4FX.dbg("[FADERCUTS] Timer stopped.");
+    }
+    NS4FX.activeFaderCut = null;
+    NS4FX.faderCutStep = 0;
+    const deck = NS4FX.decks[deckNum];
+    if (deck) {
+        if (deck.faderCutSavedVolume !== undefined && deck.faderCutSavedVolume !== null) {
+            engine.setValue(deck.currentDeck, "volume", deck.faderCutSavedVolume);
+            NS4FX.dbg(`[FADERCUTS] Restored ${deck.currentDeck} volume to ${deck.faderCutSavedVolume.toFixed(3)}`);
+            deck.faderCutSavedVolume = null;
+        }
+        // Leave the track playing
+        engine.setValue(deck.currentDeck, "play", 1);
+        NS4FX.dbg(`[FADERCUTS] Left ${deck.currentDeck} playing.`);
     }
 };
 
