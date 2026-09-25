@@ -12,6 +12,7 @@ const OnlyActiveDeckEffect = engine.getSetting("OnlyActiveDeckEffect");
 const displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
 const defaultPadMode = engine.getSetting("defaultPadMode");
 const useSlicerAsStems = engine.getSetting("useSlicerAsStems");
+const useAdditionalStemEffects = engine.getSetting("useAdditionalStemEffects");
 const useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
 const useAdditionalFadercuts = engine.getSetting("useAdditionalFadercuts");
 const useAdditionalScratchbanks = engine.getSetting("useAdditionalScratchbanks");
@@ -254,7 +255,7 @@ const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
         input: function(channel, control, value, status, group) {
             // If we're using slicer for stems, and the current pad mode is stems,
             // these pads are handled by the stem effect buttons, so we delegate the event.
-            if (useSlicerAsStems && deck.padmode_str === "stems") {
+            if (useSlicerAsStems && useAdditionalStemEffects && deck.padmode_str === "stems") {
                 if (deck.stems_buttons[padNumber + 4]) {
                     deck.stems_buttons[padNumber + 4].input(channel, control, value, status, group);
                 }
