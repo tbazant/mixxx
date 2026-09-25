@@ -19,9 +19,13 @@
             <option label="Select default performance pad mode after Mixxx startup" variable="defaultPadMode" type="enum"
                 description="Sets the performance pad mode that is active when Mixxx starts.">
                 <value label="Hot Cues" default="true">hotcue</value>
+                <value label="Pitch Play">pitchplay</value>
                 <value label="Auto Loop">autoloop</value>
+                <value label="Roll">roll</value>
                 <value label="Fader Cuts">fadercuts</value>
+                <value label="Slicer / Stems">slicer</value>
                 <value label="Sampler">sampler</value>
+                <value label="Scratch Banks">scratchbanks</value>
             </option>
         </group>
         <group label="Stem control">
