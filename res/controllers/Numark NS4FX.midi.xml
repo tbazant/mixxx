@@ -28,25 +28,21 @@
                 <value label="Scratch Banks">scratchbanks</value>
             </option>
         </group>
-        <group label="Stems">
-            <option label="Control stems with Slicer pads" variable="useSlicerAsStems" type="boolean" default="true"
-                description="When enabled, the 'Slicer' pad mode is replaced with a mode to control Stems (mute, volume, and quick effects)."/>
-            <option label="Use transport pads to control stem effects in Stem Control mode" variable="useAdditionalStemEffects" type="boolean" default="false"
-                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as stem effects 1-4 when the pad mode is set to 'Stems'."/>
-            <option label="Control stem effects with EQ knobs" variable="useEQs34asStemEffects" type="boolean" default="false"
-                description="When enabled, the EQ knobs of decks 3 and 4 control stem effects of decks 1 and 2."/>
-            <option label="Select the mode for EQ knobs" variable="useEQsAs" type="enum"
-                description="Select whether the EQ knobs should work normally or assign extended behaviour to them.">
-                <value label="Normal EQs" default="true">normal</value>
-                <value label="Stem Control (Simple)">stemSimple</value>
-                <value label="Stem Control (SoftMax)">stemSoftMax</value>
-                <value label="Stem Control (Gated Attenuation)">stemGatedAttenuation</value>
-                <value label="Stem Control (Triangle)">stemTriangle</value>
-            </option>
-        </group>
         <group label="Hot Cues">
             <option label="Use transport pads as hotcues in Hot Cue mode" variable="useAdditionalHotcues" type="boolean" default="false"
                 description="When enabled, transport pads (CUE, START, BACK, FWD) will function as hotcues 5-8 when the pad mode is set to 'Hot Cue'."/>
+        </group>
+        <group label="Auto Loops">
+            <option label="Control beat jump with Auto Loop second row pads" variable="useAutoLoopBeatJump" type="boolean" default="false"
+                description="When enabled, transport pads (CUE, START, BACK, FWD) will control beat jump (back, dec, inc, fwd) when the pad mode is set to 'Auto Loop'."/>
+            <option variable="shiftPad5JumpBeats" type="integer" default="-4" min="-512" max="512"
+                description="Shift Auto Loop Jump size key 5"/>
+            <option variable="shiftPad6JumpBeats" type="integer" default="-1" min="-512" max="512"
+                description="Shift Auto Loop Jump size key 6"/>
+            <option variable="shiftPad7JumpBeats" type="integer" default="1" min="-512" max="512"
+                description="Shift Auto Loop Jump size key 7"/>
+            <option variable="shiftPad8JumpBeats" type="integer" default="4" min="-512" max="512"
+                description="Shift Auto Loop Jump size key 8"/>
         </group>
         <group label="Fader Cuts">
             <option label="Use transport pads as fadercuts in Fader Cuts mode" variable="useAdditionalFadercuts" type="boolean" default="false"
@@ -264,17 +260,21 @@
                 <value label="Double Cut" default="true">double_cut</value>
             </option>
         </group>
-        <group label="Auto Loops">
-            <option label="Control beat jump with Auto Loop second row pads" variable="useAutoLoopBeatJump" type="boolean" default="false"
-                description="When enabled, transport pads (CUE, START, BACK, FWD) will control beat jump (back, dec, inc, fwd) when the pad mode is set to 'Auto Loop'."/>
-            <option variable="shiftPad5JumpBeats" type="integer" default="-4" min="-512" max="512"
-                description="Shift Auto Loop Jump size key 5"/>
-            <option variable="shiftPad6JumpBeats" type="integer" default="-1" min="-512" max="512"
-                description="Shift Auto Loop Jump size key 6"/>
-            <option variable="shiftPad7JumpBeats" type="integer" default="1" min="-512" max="512"
-                description="Shift Auto Loop Jump size key 7"/>
-            <option variable="shiftPad8JumpBeats" type="integer" default="4" min="-512" max="512"
-                description="Shift Auto Loop Jump size key 8"/>
+        <group label="Stems">
+            <option label="Control stems with Slicer pads" variable="useSlicerAsStems" type="boolean" default="true"
+                description="When enabled, the 'Slicer' pad mode is replaced with a mode to control Stems (mute, volume, and quick effects)."/>
+            <option label="Use transport pads to control stem effects in Stem Control mode" variable="useAdditionalStemEffects" type="boolean" default="false"
+                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as stem effects 1-4 when the pad mode is set to 'Stems'."/>
+            <option label="Control stem effects with EQ knobs" variable="useEQs34asStemEffects" type="boolean" default="false"
+                description="When enabled, the EQ knobs of decks 3 and 4 control stem effects of decks 1 and 2."/>
+            <option label="Select the mode for EQ knobs" variable="useEQsAs" type="enum"
+                description="Select whether the EQ knobs should work normally or assign extended behaviour to them.">
+                <value label="Normal EQs" default="true">normal</value>
+                <value label="Stem Control (Simple)">stemSimple</value>
+                <value label="Stem Control (SoftMax)">stemSoftMax</value>
+                <value label="Stem Control (Gated Attenuation)">stemGatedAttenuation</value>
+                <value label="Stem Control (Triangle)">stemTriangle</value>
+            </option>
         </group>
     </settings>
     <controller id="NS4FX">
