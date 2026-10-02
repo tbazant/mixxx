@@ -13,8 +13,6 @@ const displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
 const defaultPadMode = engine.getSetting("defaultPadMode");
 const useSlicerAsStems = engine.getSetting("useSlicerAsStems");
 const useAdditionalStemEffects = engine.getSetting("useAdditionalStemEffects");
-const useSlicerAsStems = engine.getSetting("useSlicerAsStems");
-const useAdditionalStemEffects = engine.getSetting("useAdditionalStemEffects");
 const useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
 const useAdditionalFadercuts = engine.getSetting("useAdditionalFadercuts");
 const useAdditionalScratchbanks = engine.getSetting("useAdditionalScratchbanks");
@@ -380,8 +378,6 @@ NS4FX.init = function(id, debug) {
     NS4FX.beatsKnob = new components.Encoder({
         input: function(_channel, control, value, _status, group) {
             let heldStemInfo = null;
-            let isEffectVolume = false;
-            let isEffectSelector = false;
             let isEffectVolume = false;
             let isEffectSelector = false;
             for (let i = 1; i <= 4; i++) {
