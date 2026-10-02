@@ -13,6 +13,8 @@ const displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
 const defaultPadMode = engine.getSetting("defaultPadMode");
 const useSlicerAsStems = engine.getSetting("useSlicerAsStems");
 const useAdditionalStemEffects = engine.getSetting("useAdditionalStemEffects");
+const useSlicerAsStems = engine.getSetting("useSlicerAsStems");
+const useAdditionalStemEffects = engine.getSetting("useAdditionalStemEffects");
 const useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
 const useAdditionalFadercuts = engine.getSetting("useAdditionalFadercuts");
 const useAdditionalScratchbanks = engine.getSetting("useAdditionalScratchbanks");
@@ -338,6 +340,26 @@ NS4FX.normalizeAndApplyStemVolumes = function(deck, volumes) {
     engine.setValue(`[Channel${deck.number}_Stem2]`, "volume", volumes.v_d); // Bass
 };
 
+/**
+ * Normalizes a set of stem volumes so the loudest stem is at 1.0 (full volume),
+ * preserving the relative ratio between them, and applies them to the deck.
+ * @param {object} deck - The deck object to apply volumes to.
+ * @param {object} volumes - An object with v_v, v_m, and v_d volume properties.
+ */
+NS4FX.normalizeAndApplyStemVolumes = function(deck, volumes) {
+    const max_vol = Math.max(volumes.v_v, volumes.v_m, volumes.v_d);
+
+    if (max_vol > 0) {
+        volumes.v_v /= max_vol;
+        volumes.v_m /= max_vol;
+        volumes.v_d /= max_vol;
+    }
+    engine.setValue(`[Channel${deck.number}_Stem4]`, "volume", volumes.v_v); // Vocals
+    engine.setValue(`[Channel${deck.number}_Stem3]`, "volume", volumes.v_m); // Music/Melody
+    engine.setValue(`[Channel${deck.number}_Stem1]`, "volume", volumes.v_d); // Drums
+    engine.setValue(`[Channel${deck.number}_Stem2]`, "volume", volumes.v_d); // Bass
+};
+
 NS4FX.testMidi = function(status, control, value) {
     midi.sendShortMsg(status, control, value);
     NS4FX.dbg(`Sent test MIDI: status=${status.toString(16)}, control=${control.toString(16)}, value=${value.toString(16)}`);
@@ -350,6 +372,7 @@ NS4FX.init = function(id, debug) {
     NS4FX.id = id;
 
     NS4FX.dbg(`useSlicerAsStems is ${useSlicerAsStems}`);
+    NS4FX.dbg(`useSlicerAsStems is ${useSlicerAsStems}`);
 
     // This component handles the BEATS knob.
     // When a stem pad is held, this knob adjusts the stem's volume (or effect amount if SHIFT is also held).
@@ -357,6 +380,8 @@ NS4FX.init = function(id, debug) {
     NS4FX.beatsKnob = new components.Encoder({
         input: function(_channel, control, value, _status, group) {
             let heldStemInfo = null;
+            let isEffectVolume = false;
+            let isEffectSelector = false;
             let isEffectVolume = false;
             let isEffectSelector = false;
             for (let i = 1; i <= 4; i++) {
@@ -886,8 +911,13 @@ NS4FX.Deck = function(number, midi_chan) {
     this.midi_chan = midi_chan;
     this.active = (number === 1 || number === 2);
 
-    // If using stems, create state objects for each pad to track hold timers and states.
     // This is necessary for the hold-for-volume/effect functionality.
+    if (useSlicerAsStems) {
+        // Add isHeldForEffectSelector to track the new SHIFT+hold state.
+        this.stemPad1 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
+        this.stemPad2 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
+        this.stemPad3 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
+        this.stemPad4 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
     if (useSlicerAsStems) {
         // Add isHeldForEffectSelector to track the new SHIFT+hold state.
         this.stemPad1 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
@@ -1173,6 +1203,7 @@ NS4FX.Deck = function(number, midi_chan) {
                     deck.hotcue_buttons.updateLEDs();
                 }
             }, true);
+            deck.updateEQs();
         },
     });
 
@@ -1949,6 +1980,7 @@ NS4FX.Deck = function(number, midi_chan) {
 
     this.stems_buttons = new components.ComponentContainer();
     if (useSlicerAsStems) {
+    if (useSlicerAsStems) {
         for (let i = 1; i <= 4; ++i) {
             this.stems_buttons[i] = new components.Button(createStemPadConfig(deck, `stemPad${i}`, i, {
                 channel: midi_chan,
@@ -2061,6 +2093,12 @@ NS4FX.Deck = function(number, midi_chan) {
                     } else {
                         deck.change_padmode("slicer");
                     }
+                    if (useSlicerAsStems) {
+                        NS4FX.dbg(`Switching to stems mode on deck ${deck.number}`);
+                        deck.change_padmode("stems");
+                    } else {
+                        deck.change_padmode("slicer");
+                    }
                 }
             },
             output: function(value) {
@@ -2102,9 +2140,11 @@ NS4FX.Deck = function(number, midi_chan) {
             this.padMode[button].groupContainer = this.padMode; // Set container reference
         }
     }
+        }
+    }
 
-        // LOOP controls
-        this.loopControls = new components.ComponentContainer({
+    // LOOP controls
+    this.loopControls = new components.ComponentContainer({
             loop_halve: new components.Button({
                 midi: [0x94 + midi_chan, 0x34],
                 input: function(_channel, _control, value, _status) {

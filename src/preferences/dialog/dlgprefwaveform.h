@@ -21,7 +21,6 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
             QWidget* pParent,
             UserSettingsPointer pConfig,
             std::shared_ptr<Library> pLibrary);
-    virtual ~DlgPrefWaveform();
 
   public slots:
     void slotUpdate() override;
@@ -63,6 +62,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotStemOpacity(float value);
     void slotStemReorderOnChange(bool value);
     void slotStemOutlineOpacity(float value);
+    void slotStemDisplayMode(int index);
     // overview options
     void slotSetWaveformOverviewType();
     void slotSetOverviewMinuteMarkers(bool minuteMarkers);
@@ -73,11 +73,8 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
     void updateEnableUntilMark();
-    void updateWaveformTypeOptions(bool useWaveform,
-            WaveformWidgetBackend backend,
-            allshader::WaveformRendererSignalBase::Options currentOption);
-    void updateWaveformAcceleration(
-            WaveformWidgetType::Type type, WaveformWidgetBackend backend);
+    void updateWaveformTypeOptions(bool useWaveform);
+    void updateWaveformAcceleration(WaveformWidgetType::Type type);
     void updateWaveformGeneralOptionsEnabled();
     void updateWaveformGainEnabled();
     void updateStemOptionsEnabled();

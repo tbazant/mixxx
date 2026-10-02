@@ -276,6 +276,22 @@
                 <value label="Stem Control (Triangle)">stemTriangle</value>
             </option>
         </group>
+        <group label="Stems">
+            <option label="Control stems with Slicer pads" variable="useSlicerAsStems" type="boolean" default="true"
+                description="When enabled, the 'Slicer' pad mode is replaced with a mode to control Stems (mute, volume, and quick effects)."/>
+            <option label="Use transport pads to control stem effects in Stem Control mode" variable="useAdditionalStemEffects" type="boolean" default="false"
+                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as stem effects 1-4 when the pad mode is set to 'Stems'."/>
+            <option label="Control stem effects with EQ knobs" variable="useEQs34asStemEffects" type="boolean" default="false"
+                description="When enabled, the EQ knobs of decks 3 and 4 control stem effects of decks 1 and 2."/>
+            <option label="Select the mode for EQ knobs" variable="useEQsAs" type="enum"
+                description="Select whether the EQ knobs should work normally or assign extended behaviour to them.">
+                <value label="Normal EQs" default="true">normal</value>
+                <value label="Stem Control (Simple)">stemSimple</value>
+                <value label="Stem Control (SoftMax)">stemSoftMax</value>
+                <value label="Stem Control (Gated Attenuation)">stemGatedAttenuation</value>
+                <value label="Stem Control (Triangle)">stemTriangle</value>
+            </option>
+        </group>
     </settings>
     <controller id="NS4FX">
         <scriptfiles>
@@ -1494,6 +1510,33 @@
                 <group>[Channel1]</group>
                 <key>NS4FX.decks[1].padMode.pad_slicer.input</key>
                 <status>0x94</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NS4FX.decks[2].padMode.pad_slicer.input</key>
+                <status>0x95</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>NS4FX.decks[3].padMode.pad_slicer.input</key>
+                <status>0x96</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>NS4FX.decks[4].padMode.pad_slicer.input</key>
+                <status>0x97</status>
                 <midino>0x0E</midino>
                 <options>
                     <script-binding/>
