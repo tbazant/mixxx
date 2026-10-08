@@ -48,254 +48,6 @@
             <option label="Use transport pads as fadercuts in Fader Cuts mode" variable="useAdditionalFadercuts" type="boolean" default="false"
                 description="When enabled, transport pads (CUE, START, BACK, FWD) will function as fadercuts 5-8 when the pad mode is set to 'Fader Cuts'."/>
             <option label="Pad 1 pattern" variable="fadercutsPad1" type="enum">
-                <value label="Side cuts" default="true">1,1,1,1,0,0,0,0,1,1,1,1</value>
-                <value label="Triplet burst">1,1,0,1,1,0,1,1,0,1,1,0</value>
-                <value label="Half-beat pulse">1,1,1,0,0,0,1,1,1,0,0,0</value>
-                <value label="1-2-1 syncopation">1,0,1,1,1,0,1,0,1,1,1,0</value>
-                <value label="Push-pull">1,0,0,1,1,1,1,0,0,1,1,1</value>
-                <value label="Funky syncopation">1,0,1,1,0,1,0,1,1,0,1,1</value>
-                <value label="Alternating">1,0,1,0,1,0,1,0</value>
-                <value label="Stutter">1,1,0,0,1,1,1,1</value>
-                <value label="Five-and-three">1,1,1,1,1,0,0,1</value>
-                <value label="Short burst">1,1,1,0,0,0,0,1</value>
-                <value label="Two-step drive">1,1,0,1,0,1,0,1</value>
-                <value label="Syncopated bounce">1,0,1,0,0,1,1,1</value>
-                <value label="Final cut">1,1,1,1,0,1,0,0</value>
-            </option>
-            <option label="Pad 2 pattern" variable="fadercutsPad2" type="enum">
-                <value label="Side cuts">1,1,1,1,0,0,0,0,1,1,1,1</value>
-                <value label="Triplet burst" default="true">1,1,0,1,1,0,1,1,0,1,1,0</value>
-                <value label="Half-beat pulse">1,1,1,0,0,0,1,1,1,0,0,0</value>
-                <value label="1-2-1 syncopation">1,0,1,1,1,0,1,0,1,1,1,0</value>
-                <value label="Push-pull">1,0,0,1,1,1,1,0,0,1,1,1</value>
-                <value label="Funky syncopation">1,0,1,1,0,1,0,1,1,0,1,1</value>
-                <value label="Alternating">1,0,1,0,1,0,1,0</value>
-                <value label="Stutter">1,1,0,0,1,1,1,1</value>
-                <value label="Five-and-three">1,1,1,1,1,0,0,1</value>
-                <value label="Short burst">1,1,1,0,0,0,0,1</value>
-                <value label="Two-step drive">1,1,0,1,0,1,0,1</value>
-                <value label="Syncopated bounce">1,0,1,0,0,1,1,1</value>
-                <value label="Final cut">1,1,1,1,0,1,0,0</value>
-            </option>
-            <option label="Pad 3 pattern" variable="fadercutsPad3" type="enum">
-                <value label="Side cuts" default="true">1,1,1,1,0,0,0,0,1,1,1,1</value>
-                <value label="Triplet burst">1,1,0,1,1,0,1,1,0,1,1,0</value>
-                <value label="Half-beat pulse">1,1,1,0,0,0,1,1,1,0,0,0</value>
-                <value label="1-2-1 syncopation">1,0,1,1,1,0,1,0,1,1,1,0</value>
-                <value label="Push-pull">1,0,0,1,1,1,1,0,0,1,1,1</value>
-                <value label="Funky syncopation">1,0,1,1,0,1,0,1,1,0,1,1</value>
-                <value label="Alternating">1,0,1,0,1,0,1,0</value>
-                <value label="Stutter">1,1,0,0,1,1,1,1</value>
-                <value label="Five-and-three">1,1,1,1,1,0,0,1</value>
-                <value label="Short burst">1,1,1,0,0,0,0,1</value>
-                <value label="Two-step drive">1,1,0,1,0,1,0,1</value>
-                <value label="Syncopated bounce">1,0,1,0,0,1,1,1</value>
-                <value label="Final cut">1,1,1,1,0,1,0,0</value>
-            </option>
-            <option label="Pad 4 pattern" variable="fadercutsPad4" type="enum">
-                <value label="Side cuts" default="true">1,1,1,1,0,0,0,0,1,1,1,1</value>
-                <value label="Triplet burst">1,1,0,1,1,0,1,1,0,1,1,0</value>
-                <value label="Half-beat pulse">1,1,1,0,0,0,1,1,1,0,0,0</value>
-                <value label="1-2-1 syncopation">1,0,1,1,1,0,1,0,1,1,1,0</value>
-                <value label="Push-pull">1,0,0,1,1,1,1,0,0,1,1,1</value>
-                <value label="Funky syncopation">1,0,1,1,0,1,0,1,1,0,1,1</value>
-                <value label="Alternating">1,0,1,0,1,0,1,0</value>
-                <value label="Stutter">1,1,0,0,1,1,1,1</value>
-                <value label="Five-and-three">1,1,1,1,1,0,0,1</value>
-                <value label="Short burst">1,1,1,0,0,0,0,1</value>
-                <value label="Two-step drive">1,1,0,1,0,1,0,1</value>
-                <value label="Syncopated bounce">1,0,1,0,0,1,1,1</value>
-                <value label="Final cut">1,1,1,1,0,1,0,0</value>
-            </option>
-            <option label="Pad 5 pattern" variable="fadercutsPad5" type="enum">
-                <value label="Side cuts" default="true">1,1,1,1,0,0,0,0,1,1,1,1</value>
-                <value label="Triplet burst">1,1,0,1,1,0,1,1,0,1,1,0</value>
-                <value label="Half-beat pulse">1,1,1,0,0,0,1,1,1,0,0,0</value>
-                <value label="1-2-1 syncopation">1,0,1,1,1,0,1,0,1,1,1,0</value>
-                <value label="Push-pull">1,0,0,1,1,1,1,0,0,1,1,1</value>
-                <value label="Funky syncopation">1,0,1,1,0,1,0,1,1,0,1,1</value>
-                <value label="Alternating">1,0,1,0,1,0,1,0</value>
-                <value label="Stutter">1,1,0,0,1,1,1,1</value>
-                <value label="Five-and-three">1,1,1,1,1,0,0,1</value>
-                <value label="Short burst">1,1,1,0,0,0,0,1</value>
-                <value label="Two-step drive">1,1,0,1,0,1,0,1</value>
-                <value label="Syncopated bounce">1,0,1,0,0,1,1,1</value>
-                <value label="Final cut">1,1,1,1,0,1,0,0</value>
-            </option>
-            <option label="Pad 6 pattern" variable="fadercutsPad6" type="enum">
-                <value label="Side cuts" default="true">1,1,1,1,0,0,0,0,1,1,1,1</value>
-                <value label="Triplet burst">1,1,0,1,1,0,1,1,0,1,1,0</value>
-                <value label="Half-beat pulse">1,1,1,0,0,0,1,1,1,0,0,0</value>
-                <value label="1-2-1 syncopation">1,0,1,1,1,0,1,0,1,1,1,0</value>
-                <value label="Push-pull">1,0,0,1,1,1,1,0,0,1,1,1</value>
-                <value label="Funky syncopation">1,0,1,1,0,1,0,1,1,0,1,1</value>
-                <value label="Alternating">1,0,1,0,1,0,1,0</value>
-                <value label="Stutter">1,1,0,0,1,1,1,1</value>
-                <value label="Five-and-three">1,1,1,1,1,0,0,1</value>
-                <value label="Short burst">1,1,1,0,0,0,0,1</value>
-                <value label="Two-step drive">1,1,0,1,0,1,0,1</value>
-                <value label="Syncopated bounce">1,0,1,0,0,1,1,1</value>
-                <value label="Final cut">1,1,1,1,0,1,0,0</value>
-            </option>
-            <option label="Pad 7 pattern" variable="fadercutsPad7" type="enum">
-                <value label="Side cuts" default="true">1,1,1,1,0,0,0,0,1,1,1,1</value>
-                <value label="Triplet burst">1,1,0,1,1,0,1,1,0,1,1,0</value>
-                <value label="Half-beat pulse">1,1,1,0,0,0,1,1,1,0,0,0</value>
-                <value label="1-2-1 syncopation">1,0,1,1,1,0,1,0,1,1,1,0</value>
-                <value label="Push-pull">1,0,0,1,1,1,1,0,0,1,1,1</value>
-                <value label="Funky syncopation">1,0,1,1,0,1,0,1,1,0,1,1</value>
-                <value label="Alternating">1,0,1,0,1,0,1,0</value>
-                <value label="Stutter">1,1,0,0,1,1,1,1</value>
-                <value label="Five-and-three">1,1,1,1,1,0,0,1</value>
-                <value label="Short burst">1,1,1,0,0,0,0,1</value>
-                <value label="Two-step drive">1,1,0,1,0,1,0,1</value>
-                <value label="Syncopated bounce">1,0,1,0,0,1,1,1</value>
-                <value label="Final cut">1,1,1,1,0,1,0,0</value>
-            </option>
-            <option label="Pad 8 pattern" variable="fadercutsPad8" type="enum">
-                <value label="Side cuts" default="true">1,1,1,1,0,0,0,0,1,1,1,1</value>
-                <value label="Triplet burst">1,1,0,1,1,0,1,1,0,1,1,0</value>
-                <value label="Half-beat pulse">1,1,1,0,0,0,1,1,1,0,0,0</value>
-                <value label="1-2-1 syncopation">1,0,1,1,1,0,1,0,1,1,1,0</value>
-                <value label="Push-pull">1,0,0,1,1,1,1,0,0,1,1,1</value>
-                <value label="Funky syncopation">1,0,1,1,0,1,0,1,1,0,1,1</value>
-                <value label="Alternating">1,0,1,0,1,0,1,0</value>
-                <value label="Stutter">1,1,0,0,1,1,1,1</value>
-                <value label="Five-and-three">1,1,1,1,1,0,0,1</value>
-                <value label="Short burst">1,1,1,0,0,0,0,1</value>
-                <value label="Two-step drive">1,1,0,1,0,1,0,1</value>
-                <value label="Syncopated bounce">1,0,1,0,0,1,1,1</value>
-                <value label="Final cut">1,1,1,1,0,1,0,0</value>
-            </option>
-        </group>
-        <group label="Scratching">
-            <option label="Exit slip mode after manual scratching" variable="exitSlipmodeAfterScratching" type="boolean" default="false"
-                description="When the slip mode is on and you start manualy scratching, exit the slip mode after you finish the scratching so that the track can continue playing from the position where it originally should have been."/>
-            <option label="Use transport pads as scratch patterns in Scratch Banks mode" variable="useAdditionalScratchbanks" type="boolean" default="false"
-                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as scratch patterns 5-8 when the pad mode is set to 'Scratch Banks'."/>
-            <option label="Scratch speed (steps per beat)" variable="scratchbanksStepsPerBeat" type="enum"
-                description="Number of timer steps per beat for scratch patterns. 32 = 2 cycles/beat, 64 = 4 cycles/beat (default), 128 = 8 cycles/beat.">
-                <value label="32 (2 cycles per beat)">32</value>
-                <value label="64 (4 cycles per beat)" default="true">64</value>
-                <value label="128 (8 cycles per beat)">128</value>
-            </option>
-            <option label="Pad 1 scratch pattern" variable="scratchbanksPad1" type="enum">
-                <value label="Baby Scratch" default="true">baby_scratch</value>
-                <value label="Forward Cut">forward_cut</value>
-                <value label="Chirp">chirp</value>
-                <value label="Transform">transform</value>
-                <value label="Stab">stab</value>
-                <value label="Tear">tear</value>
-                <value label="Flare">flare</value>
-                <value label="Double Cut">double_cut</value>
-            </option>
-            <option label="Pad 2 scratch pattern" variable="scratchbanksPad2" type="enum">
-                <value label="Baby Scratch">baby_scratch</value>
-                <value label="Forward Cut" default="true">forward_cut</value>
-                <value label="Chirp">chirp</value>
-                <value label="Transform">transform</value>
-                <value label="Stab">stab</value>
-                <value label="Tear">tear</value>
-                <value label="Flare">flare</value>
-                <value label="Double Cut">double_cut</value>
-            </option>
-            <option label="Pad 3 scratch pattern" variable="scratchbanksPad3" type="enum">
-                <value label="Baby Scratch">baby_scratch</value>
-                <value label="Forward Cut">forward_cut</value>
-                <value label="Chirp" default="true">chirp</value>
-                <value label="Transform">transform</value>
-                <value label="Stab">stab</value>
-                <value label="Tear">tear</value>
-                <value label="Flare">flare</value>
-                <value label="Double Cut">double_cut</value>
-            </option>
-            <option label="Pad 4 scratch pattern" variable="scratchbanksPad4" type="enum">
-                <value label="Baby Scratch">baby_scratch</value>
-                <value label="Forward Cut">forward_cut</value>
-                <value label="Chirp">chirp</value>
-                <value label="Transform" default="true">transform</value>
-                <value label="Stab">stab</value>
-                <value label="Tear">tear</value>
-                <value label="Flare">flare</value>
-                <value label="Double Cut">double_cut</value>
-            </option>
-            <option label="Pad 5 scratch pattern" variable="scratchbanksPad5" type="enum">
-                <value label="Baby Scratch">baby_scratch</value>
-                <value label="Forward Cut">forward_cut</value>
-                <value label="Chirp">chirp</value>
-                <value label="Transform">transform</value>
-                <value label="Stab" default="true">stab</value>
-                <value label="Tear">tear</value>
-                <value label="Flare">flare</value>
-                <value label="Double Cut">double_cut</value>
-            </option>
-            <option label="Pad 6 scratch pattern" variable="scratchbanksPad6" type="enum">
-                <value label="Baby Scratch">baby_scratch</value>
-                <value label="Forward Cut">forward_cut</value>
-                <value label="Chirp">chirp</value>
-                <value label="Transform">transform</value>
-                <value label="Stab">stab</value>
-                <value label="Tear" default="true">tear</value>
-                <value label="Flare">flare</value>
-                <value label="Double Cut">double_cut</value>
-            </option>
-            <option label="Pad 7 scratch pattern" variable="scratchbanksPad7" type="enum">
-                <value label="Baby Scratch">baby_scratch</value>
-                <value label="Forward Cut">forward_cut</value>
-                <value label="Chirp">chirp</value>
-                <value label="Transform">transform</value>
-                <value label="Stab">stab</value>
-                <value label="Tear">tear</value>
-                <value label="Flare" default="true">flare</value>
-                <value label="Double Cut">double_cut</value>
-            </option>
-            <option label="Pad 8 scratch pattern" variable="scratchbanksPad8" type="enum">
-                <value label="Baby Scratch">baby_scratch</value>
-                <value label="Forward Cut">forward_cut</value>
-                <value label="Chirp">chirp</value>
-                <value label="Transform">transform</value>
-                <value label="Stab">stab</value>
-                <value label="Tear">tear</value>
-                <value label="Flare">flare</value>
-                <value label="Double Cut" default="true">double_cut</value>
-            </option>
-        </group>
-        <group label="Stems">
-            <option label="Control stems with Slicer pads" variable="useSlicerAsStems" type="boolean" default="true"
-                description="When enabled, the 'Slicer' pad mode is replaced with a mode to control Stems (mute, volume, and quick effects)."/>
-            <option label="Use transport pads to control stem effects in Stem Control mode" variable="useAdditionalStemEffects" type="boolean" default="false"
-                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as stem effects 1-4 when the pad mode is set to 'Stems'."/>
-            <option label="Control stem effects with EQ knobs" variable="useEQs34asStemEffects" type="boolean" default="false"
-                description="When enabled, the EQ knobs of decks 3 and 4 control stem effects of decks 1 and 2."/>
-            <option label="Select the mode for EQ knobs" variable="useEQsAs" type="enum"
-                description="Select whether the EQ knobs should work normally or assign extended behaviour to them.">
-                <value label="Normal EQs" default="true">normal</value>
-                <value label="Stem Control (Simple)">stemSimple</value>
-                <value label="Stem Control (SoftMax)">stemSoftMax</value>
-                <value label="Stem Control (Gated Attenuation)">stemGatedAttenuation</value>
-                <value label="Stem Control (Triangle)">stemTriangle</value>
-            </option>
-        </group>
-        <group label="Stems">
-            <option label="Control stems with Slicer pads" variable="useSlicerAsStems" type="boolean" default="true"
-                description="When enabled, the 'Slicer' pad mode is replaced with a mode to control Stems (mute, volume, and quick effects)."/>
-            <option label="Use transport pads to control stem effects in Stem Control mode" variable="useAdditionalStemEffects" type="boolean" default="false"
-                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as stem effects 1-4 when the pad mode is set to 'Stems'."/>
-            <option label="Control stem effects with EQ knobs" variable="useEQs34asStemEffects" type="boolean" default="false"
-                description="When enabled, the EQ knobs of decks 3 and 4 control stem effects of decks 1 and 2."/>
-            <option label="Select the mode for EQ knobs" variable="useEQsAs" type="enum"
-                description="Select whether the EQ knobs should work normally or assign extended behaviour to them.">
-                <value label="Normal EQs" default="true">normal</value>
-                <value label="Stem Control (Simple)">stemSimple</value>
-                <value label="Stem Control (SoftMax)">stemSoftMax</value>
-                <value label="Stem Control (Gated Attenuation)">stemGatedAttenuation</value>
-                <value label="Stem Control (Triangle)">stemTriangle</value>
-            </option>
-        </group>
-        <group label="Fader Cuts">
-            <option label="Use transport pads as fadercuts in Fader Cuts mode" variable="useAdditionalFadercuts" type="boolean" default="false"
-                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as fadercuts 5-8 when the pad mode is set to 'Fader Cuts'."/>
-            <option label="Pad 1 pattern" variable="fadercutsPad1" type="enum">
                 <value label="Side cuts" default="true">side_cuts</value>
                 <value label="Triplet burst">triplet_burst</value>
                 <value label="Half-beat pulse">half_beat_pulse</value>
@@ -446,6 +198,114 @@
                 <value label="2 beats" default="true">2</value>
                 <value label="3 beats">3</value>
                 <value label="4 beats">4</value>
+            </option>
+        </group>
+        <group label="Scratching">
+            <option label="Exit slip mode after manual scratching" variable="exitSlipmodeAfterScratching" type="boolean" default="false"
+                description="When the slip mode is on and you start manualy scratching, exit the slip mode after you finish the scratching so that the track can continue playing from the position where it originally should have been."/>
+            <option label="Use transport pads as scratch patterns in Scratch Banks mode" variable="useAdditionalScratchbanks" type="boolean" default="false"
+                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as scratch patterns 5-8 when the pad mode is set to 'Scratch Banks'."/>
+            <option label="Scratch speed (steps per beat)" variable="scratchbanksStepsPerBeat" type="enum"
+                description="Number of timer steps per beat for scratch patterns. 32 = 2 cycles/beat, 64 = 4 cycles/beat (default), 128 = 8 cycles/beat.">
+                <value label="32 (2 cycles per beat)">32</value>
+                <value label="64 (4 cycles per beat)" default="true">64</value>
+                <value label="128 (8 cycles per beat)">128</value>
+            </option>
+            <option label="Pad 1 scratch pattern" variable="scratchbanksPad1" type="enum">
+                <value label="Baby Scratch" default="true">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 2 scratch pattern" variable="scratchbanksPad2" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut" default="true">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 3 scratch pattern" variable="scratchbanksPad3" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp" default="true">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 4 scratch pattern" variable="scratchbanksPad4" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform" default="true">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 5 scratch pattern" variable="scratchbanksPad5" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab" default="true">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 6 scratch pattern" variable="scratchbanksPad6" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear" default="true">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 7 scratch pattern" variable="scratchbanksPad7" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare" default="true">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 8 scratch pattern" variable="scratchbanksPad8" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut" default="true">double_cut</value>
+            </option>
+        </group>
+        <group label="Stems">
+            <option label="Control stems with Slicer pads" variable="useSlicerAsStems" type="boolean" default="true"
+                description="When enabled, the 'Slicer' pad mode is replaced with a mode to control Stems (mute, volume, and quick effects)."/>
+            <option label="Use transport pads to control stem effects in Stem Control mode" variable="useAdditionalStemEffects" type="boolean" default="false"
+                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as stem effects 1-4 when the pad mode is set to 'Stems'."/>
+            <option label="Control stem effects with EQ knobs" variable="useEQs34asStemEffects" type="boolean" default="false"
+                description="When enabled, the EQ knobs of decks 3 and 4 control stem effects of decks 1 and 2."/>
+            <option label="Select the mode for EQ knobs" variable="useEQsAs" type="enum"
+                description="Select whether the EQ knobs should work normally or assign extended behaviour to them.">
+                <value label="Normal EQs" default="true">normal</value>
+                <value label="Stem Control (Simple)">stemSimple</value>
+                <value label="Stem Control (SoftMax)">stemSoftMax</value>
+                <value label="Stem Control (Gated Attenuation)">stemGatedAttenuation</value>
+                <value label="Stem Control (Triangle)">stemTriangle</value>
             </option>
         </group>
     </settings>
