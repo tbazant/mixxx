@@ -90,28 +90,6 @@ const fadercutPadDurations = [
     parseInt(engine.getSetting("fadercutsPad7Duration"), 10) || 1,
     parseInt(engine.getSetting("fadercutsPad8Duration"), 10) || 1
 ];
-const useEQsAs = engine.getSetting("useEQsAs");
-const useEQs34asStemEffects = engine.getSetting("useEQs34asStemEffects");
-const useAutoLoopBeatJump = engine.getSetting("useAutoLoopBeatJump");
-const shiftAutoloopJump = [
-    null,
-    parseInt(engine.getSetting("shiftPad5JumpBeats")),
-    parseInt(engine.getSetting("shiftPad6JumpBeats")),
-    parseInt(engine.getSetting("shiftPad7JumpBeats")),
-    parseInt(engine.getSetting("shiftPad8JumpBeats"))
-]
-const scratchbanksPadPatterns = [
-    null,
-    engine.getSetting("scratchbanksPad1") || "baby_scratch",
-    engine.getSetting("scratchbanksPad2") || "forward_cut",
-    engine.getSetting("scratchbanksPad3") || "chirp",
-    engine.getSetting("scratchbanksPad4") || "transform",
-    engine.getSetting("scratchbanksPad5") || "stab",
-    engine.getSetting("scratchbanksPad6") || "tear",
-    engine.getSetting("scratchbanksPad7") || "flare",
-    engine.getSetting("scratchbanksPad8") || "double_cut"
-];
-const scratchbanksStepsPerBeat = parseInt(engine.getSetting("scratchbanksStepsPerBeat")) || 64;
 
 /**
  * Creates a configuration object for a performance pad to be used for stem control.
