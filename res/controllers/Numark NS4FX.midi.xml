@@ -205,12 +205,6 @@
                 description="When the slip mode is on and you start manualy scratching, exit the slip mode after you finish the scratching so that the track can continue playing from the position where it originally should have been."/>
             <option label="Use transport pads as scratch patterns in Scratch Banks mode" variable="useAdditionalScratchbanks" type="boolean" default="false"
                 description="When enabled, transport pads (CUE, START, BACK, FWD) will function as scratch patterns 5-8 when the pad mode is set to 'Scratch Banks'."/>
-            <option label="Scratch speed (steps per beat)" variable="scratchbanksStepsPerBeat" type="enum"
-                description="Number of timer steps per beat for scratch patterns. 32 = 2 cycles/beat, 64 = 4 cycles/beat (default), 128 = 8 cycles/beat.">
-                <value label="32 (2 cycles per beat)">32</value>
-                <value label="64 (4 cycles per beat)" default="true">64</value>
-                <value label="128 (8 cycles per beat)">128</value>
-            </option>
             <option label="Pad 1 scratch pattern" variable="scratchbanksPad1" type="enum">
                 <value label="Baby Scratch" default="true">baby_scratch</value>
                 <value label="Forward Cut">forward_cut</value>
@@ -220,6 +214,14 @@
                 <value label="Tear">tear</value>
                 <value label="Flare">flare</value>
                 <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 1 scratch duration (beats)" variable="scratchbanksPad1Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
             </option>
             <option label="Pad 2 scratch pattern" variable="scratchbanksPad2" type="enum">
                 <value label="Baby Scratch">baby_scratch</value>
@@ -231,6 +233,14 @@
                 <value label="Flare">flare</value>
                 <value label="Double Cut">double_cut</value>
             </option>
+            <option label="Pad 2 scratch duration (beats)" variable="scratchbanksPad2Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
             <option label="Pad 3 scratch pattern" variable="scratchbanksPad3" type="enum">
                 <value label="Baby Scratch">baby_scratch</value>
                 <value label="Forward Cut">forward_cut</value>
@@ -240,6 +250,14 @@
                 <value label="Tear">tear</value>
                 <value label="Flare">flare</value>
                 <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 3 scratch duration (beats)" variable="scratchbanksPad3Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
             </option>
             <option label="Pad 4 scratch pattern" variable="scratchbanksPad4" type="enum">
                 <value label="Baby Scratch">baby_scratch</value>
@@ -251,6 +269,14 @@
                 <value label="Flare">flare</value>
                 <value label="Double Cut">double_cut</value>
             </option>
+            <option label="Pad 4 scratch duration (beats)" variable="scratchbanksPad4Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
             <option label="Pad 5 scratch pattern" variable="scratchbanksPad5" type="enum">
                 <value label="Baby Scratch">baby_scratch</value>
                 <value label="Forward Cut">forward_cut</value>
@@ -260,6 +286,14 @@
                 <value label="Tear">tear</value>
                 <value label="Flare">flare</value>
                 <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 5 scratch duration (beats)" variable="scratchbanksPad5Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
             </option>
             <option label="Pad 6 scratch pattern" variable="scratchbanksPad6" type="enum">
                 <value label="Baby Scratch">baby_scratch</value>
@@ -271,6 +305,14 @@
                 <value label="Flare">flare</value>
                 <value label="Double Cut">double_cut</value>
             </option>
+            <option label="Pad 6 scratch duration (beats)" variable="scratchbanksPad6Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
             <option label="Pad 7 scratch pattern" variable="scratchbanksPad7" type="enum">
                 <value label="Baby Scratch">baby_scratch</value>
                 <value label="Forward Cut">forward_cut</value>
@@ -281,6 +323,14 @@
                 <value label="Flare" default="true">flare</value>
                 <value label="Double Cut">double_cut</value>
             </option>
+            <option label="Pad 7 scratch duration (beats)" variable="scratchbanksPad7Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
             <option label="Pad 8 scratch pattern" variable="scratchbanksPad8" type="enum">
                 <value label="Baby Scratch">baby_scratch</value>
                 <value label="Forward Cut">forward_cut</value>
@@ -290,6 +340,14 @@
                 <value label="Tear">tear</value>
                 <value label="Flare">flare</value>
                 <value label="Double Cut" default="true">double_cut</value>
+            </option>
+            <option label="Pad 8 scratch duration (beats)" variable="scratchbanksPad8Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
             </option>
         </group>
         <group label="Stems">

@@ -26,7 +26,63 @@ const shiftAutoloopJump = [
     parseInt(engine.getSetting("shiftPad6JumpBeats")),
     parseInt(engine.getSetting("shiftPad7JumpBeats")),
     parseInt(engine.getSetting("shiftPad8JumpBeats"))
-]
+];
+/**
+ * Auto-scratch routines for Scratch Banks mode (momentary).
+ * Each routine defines:
+ * - ticks: displacement per step (+ = forward, - = backward).
+ * - fader: volume multiplier per step (1 = open, 0 = muted).
+ */
+const autoScratchPatternDefs = {
+    "baby_scratch": {
+        name: "Baby Scratch",
+        ticks: [45, 85, 85, 45, -45, -85, -85, -45],
+        fader: [1, 1, 1, 1, 1, 1, 1, 1]
+    },
+
+    "forward_cut": {
+        name: "Forward Cut",
+        ticks: [50, 80, 70, 40, 20, -70, -110, -80],
+        fader: [1, 1, 1, 1, 1, 0, 0, 0]
+    },
+
+    "chirp": {
+        name: "Chirp",
+        ticks: [50, 80, 80, 30, 20, -20, -30, -80, -80, -50],
+        fader: [1, 1, 1, 0, 0, 0, 0, 1, 1, 1]
+    },
+
+    "transform": {
+        name: "Transform",
+        ticks: [30, 60, 80, 60, 30, 0, -30, -60, -80, -60, -30, 0],
+        fader: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
+    },
+
+    "stab": {
+        name: "Stab",
+        ticks: [50, 90, 80, 40, -40, -90, -90, -40],
+        fader: [1, 1, 1, 1, 0, 0, 0, 0]
+    },
+
+    "tear": {
+        name: "Tear",
+        ticks: [30, 50, 40, 50, 90, -30, -50, -60, -50, -40, -20, -10],
+        fader: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0]
+    },
+
+    "flare": {
+        name: "Flare",
+        ticks: [40, 70, 80, 50, 20, -20, -50, -80, -70, -40],
+        fader: [1, 1, 0, 1, 1, 1, 1, 0, 1, 1]
+    },
+
+    "double_cut": {
+        name: "Double Cut",
+        ticks: [30, 60, 80, 60, 30, 0, -30, -60, -80, -60, -30, 0],
+        fader: [1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1]
+    }
+};
+
 const scratchbanksPadPatterns = [
     null,
     engine.getSetting("scratchbanksPad1") || "baby_scratch",
@@ -37,6 +93,17 @@ const scratchbanksPadPatterns = [
     engine.getSetting("scratchbanksPad6") || "tear",
     engine.getSetting("scratchbanksPad7") || "flare",
     engine.getSetting("scratchbanksPad8") || "double_cut"
+];
+const scratchbanksPadDurations = [
+    null,
+    parseFloat(engine.getSetting("scratchbanksPad1Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad2Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad3Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad4Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad5Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad6Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad7Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad8Duration")) || 1
 ];
 const scratchbanksStepsPerBeat = parseInt(engine.getSetting("scratchbanksStepsPerBeat")) || 64;
 
@@ -2379,108 +2446,10 @@ NS4FX.autoScratchStopTimer = null;
 NS4FX.activeAutoScratch = null;
 NS4FX.autoScratchStep = 0;
 
-/**
- * Auto-scratch routines for Scratch Banks mode (momentary).
- * Each routine defines:
- * - ticks: displacement per step (+ = forward, - = backward).
- * - fader: volume multiplier per step (1 = open, 0 = muted).
- */
-NS4FX.autoScratchPatterns = {
-    baby_scratch: {
-        name: "Baby Scratch",
-        ticks: [
-            35, 65, 90, 80, 50, 20, 0, 0,
-            -35, -65, -90, -80, -50, -20, 0, 0
-        ],
-        fader: [
-            1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1
-        ]
-    },
-
-    forward_cut: {
-        name: "Forward Cut",
-        ticks: [
-            40, 75, 95, 85, 55, 20, 0, 0,
-            -40, -80, -100, -80, -50, -20, 0, 0
-        ],
-        fader: [
-            1, 1, 1, 1, 1, 1, 1, 1,
-            0, 0, 0, 0, 0, 0, 0, 0
-        ]
-    },
-
-    chirp: {
-        name: "Chirp",
-        ticks: [
-            40, 75, 95, 60, 20, 0, -20, -60,
-            -95, -75, -40, 0, 0, 0, 0, 0
-        ],
-        fader: [
-            1, 1, 1, 0, 0, 0, 0, 0,
-            1, 1, 1, 1, 1, 1, 1, 1
-        ]
-    },
-
-    transform: {
-        name: "Transform",
-        ticks: [
-            35, 70, 90, 75, 45, 20, 0, 0,
-            -35, -70, -90, -75, -45, -20, 0, 0
-        ],
-        fader: [
-            1, 0, 1, 0, 1, 0, 1, 1,
-            1, 0, 1, 0, 1, 0, 1, 1
-        ]
-    },
-
-    stab: {
-        name: "Stab",
-        ticks: [
-            45, 85, 100, 65, 25, 0, -20, -35,
-            -20, 0, 0, 0, 0, 0, 0, 0
-        ],
-        fader: [
-            1, 1, 1, 1, 1, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0
-        ]
-    },
-
-    tear: {
-        name: "Tear",
-        ticks: [
-            30, 65, 95, 75, 45, 15, -20, -40,
-            -15, 20, 55, 90, 75, 45, 15, 0
-        ],
-        fader: [
-            1, 1, 1, 1, 1, 0, 0, 0,
-            1, 1, 1, 1, 1, 1, 0, 0
-        ]
-    },
-
-    flare: {
-        name: "Flare",
-        ticks: [
-            30, 55, 80, 95, 80, 55, 30, 0,
-            -30, -55, -80, -95, -80, -55, -30, 0
-        ],
-        fader: [
-            1, 0, 1, 1, 0, 1, 0, 1,
-            1, 0, 1, 1, 0, 1, 0, 1
-        ]
-    },
-
-    double_cut: {
-        name: "Double Cut",
-        ticks: [
-            35, 70, 95, 80, 55, 30, 10, 0,
-            -35, -70, -95, -80, -55, -30, -10, 0
-        ],
-        fader: [
-            1, 1, 0, 1, 0, 1, 0, 0,
-            1, 1, 0, 1, 0, 1, 0, 0
-        ]
-    }
+NS4FX.getAutoScratchInterval = function(effectiveBpm, stepsInPattern, durationBeats) {
+    const beats = durationBeats || 1;
+    const steps = stepsInPattern || 16;
+    return (beats * 60000 / effectiveBpm) / steps;
 };
 
 NS4FX.startAutoScratch = function(deckNum, padNumber) {
@@ -2500,9 +2469,9 @@ NS4FX.startAutoScratch = function(deckNum, padNumber) {
     }
 
     const patternId = scratchbanksPadPatterns[padNumber];
-    const pattern = NS4FX.autoScratchPatterns[patternId];
+    const pattern = autoScratchPatternDefs[patternId];
     if (!pattern) {
-        NS4FX.dbg(`[AUTOSCRATCH] Error: Pattern '${patternId}' for pad ${padNumber} not found.`);
+        NS4FX.dbg(`[AUTOSCRATCH] Error: Pattern "${patternId}" for pad ${padNumber} not found.`);
         return;
     }
 
@@ -2518,12 +2487,12 @@ NS4FX.startAutoScratch = function(deckNum, padNumber) {
         engine.setValue(deck.currentDeck, "play", 1);
     }
 
-    // Calculate BPM-based interval per step
+    // Calculate BPM-based interval per step based on pattern length and configured duration
     const deckBpm = engine.getValue(deck.currentDeck, "bpm") || engine.getValue(deck.currentDeck, "local_bpm") || 120;
     const effectiveBpm = Math.max(20, deckBpm);
-    const stepsPerBeat = scratchbanksStepsPerBeat || 64;
-    const intervalMs = (60000 / effectiveBpm) / stepsPerBeat;
-    NS4FX.dbg(`[AUTOSCRATCH] Pattern '${pattern.name}' BPM: ${effectiveBpm.toFixed(2)}, stepsPerBeat: ${stepsPerBeat}, interval: ${intervalMs.toFixed(2)} ms`);
+    const durationBeats = scratchbanksPadDurations[padNumber] || 1;
+    const intervalMs = NS4FX.getAutoScratchInterval(effectiveBpm, pattern.ticks.length, durationBeats);
+    NS4FX.dbg(`[AUTOSCRATCH] Pattern "${pattern.name}" BPM: ${effectiveBpm.toFixed(2)}, duration: ${durationBeats} beat(s), interval: ${intervalMs.toFixed(2)} ms`);
 
     const startScratching = function() {
         NS4FX.autoScratchStartTimer = null;
