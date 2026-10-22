@@ -20,6 +20,7 @@ const exitSlipmodeAfterScratching = engine.getSetting("exitSlipmodeAfterScratchi
 const useEQsAs = engine.getSetting("useEQsAs");
 const useEQs34asStemEffects = engine.getSetting("useEQs34asStemEffects");
 const useAutoLoopBeatJump = engine.getSetting("useAutoLoopBeatJump");
+const loopRollLongestDuration = parseFloat(engine.getSetting("loopRollLongestDuration")) || 0.5;
 const shiftAutoloopJump = [
     null,
     parseInt(engine.getSetting("shiftPad5JumpBeats")),
@@ -105,7 +106,6 @@ const scratchbanksPadDurations = [
     parseFloat(engine.getSetting("scratchbanksPad7Duration")) || 1,
     parseFloat(engine.getSetting("scratchbanksPad8Duration")) || 1
 ];
-const scratchbanksStepsPerBeat = parseInt(engine.getSetting("scratchbanksStepsPerBeat")) || 64;
 
 const fadercutPatternDefs = {
     "side_cuts": [1, 1, 1, 1, 0, 1, 1], // 1
@@ -1862,8 +1862,10 @@ NS4FX.Deck = function(number, midi_chan) {
         });
 
 
-        const rollDuration = Math.pow(2, -(i)); // Calculates the loop roll duration (0.5, 0.25, 0.125, 0.0625)
-        const rollDurationString = rollDuration.toFixed(4).replace(/0+$/, "");
+        // Calculate roll duration based on loopRollLongestDuration (assigned to Pad 4, i=1),
+        // with each preceding pad halving the duration (Pad 3 = /2, Pad 2 = /4, Pad 1 = /8).
+        const rollDuration = loopRollLongestDuration / Math.pow(2, i - 1);
+        const rollDurationString = rollDuration.toFixed(4).replace(/\.?0+$/, "");
         this.roll_buttons[5 - i] = new components.Button({
             midi: [0x94 + midi_chan, 0x18 - i], // MIDI address for the buttons
             number: 5 - i, // Button number (1 to 4)
