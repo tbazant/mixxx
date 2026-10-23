@@ -4,29 +4,378 @@
         <name>Numark NS4FX</name>
         <author>Tomáš Bažant, Erik Puschendorf, Matthew Nicholson</author>
         <description>Numark NS4FX mapping with support for LCD screens and 4 deck playback.</description>
-        <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=8863</forums>
+        <forums>https://mixxx.discourse.group/t/numark-ns4-fx-mapping-repository/32767/26</forums>
     </info>
     <settings>
         <group label="Global Settings">
-            <option type="boolean" variable="EnableWheel" label="Enable Wheel on startup" default="true" description="When enabled, the jog wheels will be in vinyl/scratch mode by default. When disabled, they will be in pitch bend/nudge mode."/>
-            <option type="boolean" variable="ShiftLoadEjects" label="Shift+Load ejects track" default="true" description="When enabled, holding the SHIFT button and pressing LOAD will eject the track from the deck. If disabled, it will load and play the selected track."/>
-            <option type="boolean" variable="OnlyActiveDeckEffect" label="Use effect only on active deck" default="false" description="When enabled, effects are only applied to the currently active deck (e.g., Deck 1 or 3). When disabled, effects are applied to both decks on that side (e.g., Deck 1 and 3)."/>
-            <option type="boolean" variable="displayVUFromBothDecks" label="Display VU from both decks" default="false" description="When enabled, the channel VU meters will display the left and right master output levels. When disabled, they will display the individual level for each active deck."/>
-            <option type="boolean"
-                variable="exitSlipmodeAfterScratching"
-                label="Exit slip mode after scratching"
-                default="false"
-                description="When the slip mode is on and you start scratching, exit the slip mode after you finish the scratching so that the track can continue playing from the position where it originally should have been."/>
-        </group>
-        <group label="Performance Pads">
-            <option type="enum" variable="defaultPadMode" label="Select default pad mode after Mixxx startup" description="Sets the performance pad mode that is active when Mixxx starts.">
+            <option label="Enable Wheel on startup" variable="EnableWheel" type="boolean" default="true"
+                description="When enabled, the jog wheels will be in vinyl/scratch mode by default. When disabled, they will be in pitch bend/nudge mode."/>
+            <option label="Shift+Load ejects track" variable="ShiftLoadEjects" type="boolean" default="true"
+                description="When enabled, holding the SHIFT button and pressing LOAD will eject the track from the deck. If disabled, it will load and play the selected track."/>
+            <option label="Use effect only on active deck" variable="OnlyActiveDeckEffect" type="boolean" default="false"
+                description="When enabled, effects are only applied to the currently active deck (e.g., Deck 1 or 3). When disabled, effects are applied to both decks on that side (e.g., Deck 1 and 3)."/>
+            <option label="Display VU from both decks" variable="displayVUFromBothDecks" type="boolean" default="false"
+                description="When enabled, the channel VU meters will display the left and right master output levels. When disabled, they will display the individual level for each active deck."/>
+            <option label="Select default performance pad mode after Mixxx startup" variable="defaultPadMode" type="enum"
+                description="Sets the performance pad mode that is active when Mixxx starts.">
                 <value label="Hot Cues" default="true">hotcue</value>
+                <value label="Pitch Play">pitchplay</value>
                 <value label="Auto Loop">autoloop</value>
+                <value label="Roll">roll</value>
                 <value label="Fader Cuts">fadercuts</value>
+                <value label="Slicer / Stems">slicer</value>
                 <value label="Sampler">sampler</value>
+                <value label="Scratch Banks">scratchbanks</value>
             </option>
-            <option type="boolean" variable="useFadercutsAsStems" label="Control stems with Fader Cuts pads" default="false" description="When enabled, the 'Fader Cuts' pad mode is replaced with a mode to control Stems (mute, volume, and quick effects)."/>
-            <option type="boolean" variable="useAdditionalHotcues" label="Add hotcues 5-8 to the second row of pads" default="false" description="When enabled, the bottom row of transport pads (CUE, START, BACK, FWD) will function as hotcues 5-8 when the pad mode is set to 'Hot Cue'."/>
+        </group>
+        <group label="Hot Cues">
+            <option label="Use transport pads as hotcues in Hot Cue mode" variable="useAdditionalHotcues" type="boolean" default="false"
+                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as hotcues 5-8 when the pad mode is set to 'Hot Cue'."/>
+        </group>
+        <group label="Auto Loops">
+            <option label="Control beat jump with Auto Loop second row pads" variable="useAutoLoopBeatJump" type="boolean" default="false"
+                description="When enabled, transport pads (CUE, START, BACK, FWD) will control beat jump (back, dec, inc, fwd) when the pad mode is set to 'Auto Loop'."/>
+            <option variable="shiftPad5JumpBeats" type="integer" default="-4" min="-512" max="512"
+                description="Shift Auto Loop Jump size key 5"/>
+            <option variable="shiftPad6JumpBeats" type="integer" default="-1" min="-512" max="512"
+                description="Shift Auto Loop Jump size key 6"/>
+            <option variable="shiftPad7JumpBeats" type="integer" default="1" min="-512" max="512"
+                description="Shift Auto Loop Jump size key 7"/>
+            <option variable="shiftPad8JumpBeats" type="integer" default="4" min="-512" max="512"
+                description="Shift Auto Loop Jump size key 8"/>
+        </group>
+        <group label="Fader Cuts">
+            <option label="Use transport pads as fadercuts in Fader Cuts mode" variable="useAdditionalFadercuts" type="boolean" default="false"
+                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as fadercuts 5-8 when the pad mode is set to 'Fader Cuts'."/>
+            <option label="Pad 1 pattern" variable="fadercutsPad1" type="enum">
+                <value label="Side cuts" default="true">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 1 duration (beats)" variable="fadercutsPad1Duration" type="enum">
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 2 pattern" variable="fadercutsPad2" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst" default="true">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 2 duration (beats)" variable="fadercutsPad2Duration" type="enum">
+                <value label="1 beat">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats" default="true">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 3 pattern" variable="fadercutsPad3" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse" default="true">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 3 duration (beats)" variable="fadercutsPad3Duration" type="enum">
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 4 pattern" variable="fadercutsPad4" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation" default="true">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 4 duration (beats)" variable="fadercutsPad4Duration" type="enum">
+                <value label="1 beat">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats" default="true">4</value>
+            </option>
+            <option label="Pad 5 pattern" variable="fadercutsPad5" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull" default="true">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 5 duration (beats)" variable="fadercutsPad5Duration" type="enum">
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 6 pattern" variable="fadercutsPad6" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating" default="true">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 6 duration (beats)" variable="fadercutsPad6Duration" type="enum">
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 7 pattern" variable="fadercutsPad7" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating" default="true">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 7 duration (beats)" variable="fadercutsPad7Duration" type="enum">
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 8 pattern" variable="fadercutsPad8" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce" default="true">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 8 duration (beats)" variable="fadercutsPad8Duration" type="enum">
+                <value label="1 beat">1</value>
+                <value label="2 beats" default="true">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+        </group>
+        <group label="Loop Rolls">
+            <option label="Longest roll duration (Pad 4)" variable="loopRollLongestDuration" type="enum"
+                description="Longest loop roll duration assigned to Pad 4. Preceding pads halve the duration (Pad 3 = 1/2, Pad 2 = 1/4, Pad 1 = 1/8 of Pad 4).">
+                <value label="2 beats">2</value>
+                <value label="1 beat">1</value>
+                <value label="1/2 beat" default="true">0.5</value>
+            </option>
+            <option label="Use transport pads for ping-pong rolls in Loop Roll mode" variable="useLoopRollPingPong" type="boolean" default="false"
+            description="When enabled, transport pads 5-8 function as pads 1-4 in Loop Roll mode, matching the durations of pads 1-4 with ping-pong
+            stereo panning (odd loop = Left, even loop = Right)."/>
+        </group>
+        <group label="Stems">
+            <option label="Control stems with Slicer pads" variable="useSlicerAsStems" type="boolean" default="true"
+                description="When enabled, the 'Slicer' pad mode is replaced with a mode to control Stems (mute, volume, and quick effects)."/>
+            <option label="Use transport pads to control stem effects in Stem Control mode" variable="useAdditionalStemEffects" type="boolean" default="false"
+                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as stem effects 1-4 when the pad mode is set to 'Stems'."/>
+            <option label="Control stem effects with EQ knobs" variable="useEQs34asStemEffects" type="boolean" default="false"
+                description="When enabled, the EQ knobs of decks 3 and 4 control stem effects of decks 1 and 2."/>
+            <option label="Select the mode for EQ knobs" variable="useEQsAs" type="enum"
+                description="Select whether the EQ knobs should work normally or assign extended behaviour to them.">
+                <value label="Normal EQs" default="true">normal</value>
+                <value label="Stem Control (Simple)">stemSimple</value>
+                <value label="Stem Control (SoftMax)">stemSoftMax</value>
+                <value label="Stem Control (Gated Attenuation)">stemGatedAttenuation</value>
+                <value label="Stem Control (Triangle)">stemTriangle</value>
+            </option>
+        </group>
+        <group label="Scratching">
+            <option label="Exit slip mode after manual scratching" variable="exitSlipmodeAfterScratching" type="boolean" default="false"
+                description="When the slip mode is on and you start manualy scratching, exit the slip mode after you finish the scratching so that the track can continue playing from the position where it originally should have been."/>
+            <option label="Use transport pads as scratch patterns in Scratch Banks mode" variable="useAdditionalScratchbanks" type="boolean" default="false"
+                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as scratch patterns 5-8 when the pad mode is set to 'Scratch Banks'."/>
+            <option label="Pad 1 scratch pattern" variable="scratchbanksPad1" type="enum">
+                <value label="Baby Scratch" default="true">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 1 scratch duration (beats)" variable="scratchbanksPad1Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 2 scratch pattern" variable="scratchbanksPad2" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut" default="true">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 2 scratch duration (beats)" variable="scratchbanksPad2Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 3 scratch pattern" variable="scratchbanksPad3" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp" default="true">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 3 scratch duration (beats)" variable="scratchbanksPad3Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 4 scratch pattern" variable="scratchbanksPad4" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform" default="true">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 4 scratch duration (beats)" variable="scratchbanksPad4Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 5 scratch pattern" variable="scratchbanksPad5" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab" default="true">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 5 scratch duration (beats)" variable="scratchbanksPad5Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 6 scratch pattern" variable="scratchbanksPad6" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear" default="true">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 6 scratch duration (beats)" variable="scratchbanksPad6Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 7 scratch pattern" variable="scratchbanksPad7" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare" default="true">flare</value>
+                <value label="Double Cut">double_cut</value>
+            </option>
+            <option label="Pad 7 scratch duration (beats)" variable="scratchbanksPad7Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 8 scratch pattern" variable="scratchbanksPad8" type="enum">
+                <value label="Baby Scratch">baby_scratch</value>
+                <value label="Forward Cut">forward_cut</value>
+                <value label="Chirp">chirp</value>
+                <value label="Transform">transform</value>
+                <value label="Stab">stab</value>
+                <value label="Tear">tear</value>
+                <value label="Flare">flare</value>
+                <value label="Double Cut" default="true">double_cut</value>
+            </option>
+            <option label="Pad 8 scratch duration (beats)" variable="scratchbanksPad8Duration" type="enum">
+                <value label="1/4 beat">0.25</value>
+                <value label="1/2 beat">0.5</value>
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
         </group>
     </settings>
     <controller id="NS4FX">
@@ -415,6 +764,33 @@
                 </options>
             </control>
             <control>
+                <group>[Channel2]</group>
+                <key>NS4FX.decks[2].padMode.pad_pitchplay.input</key>
+                <status>0x95</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>NS4FX.decks[3].padMode.pad_pitchplay.input</key>
+                <status>0x96</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>NS4FX.decks[4].padMode.pad_pitchplay.input</key>
+                <status>0x97</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[EffectRack1_EffectUnit1_Effect3]</group>
                 <key>NS4FX.effectUnit.effectButtons.flanger.input</key>
                 <status>0x98</status>
@@ -643,6 +1019,33 @@
                 <group>[Channel1]</group>
                 <key>NS4FX.decks[1].padMode.pad_roll.input</key>
                 <status>0x94</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NS4FX.decks[2].padMode.pad_roll.input</key>
+                <status>0x95</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>NS4FX.decks[3].padMode.pad_roll.input</key>
+                <status>0x96</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>NS4FX.decks[4].padMode.pad_roll.input</key>
+                <status>0x97</status>
                 <midino>0x06</midino>
                 <options>
                     <script-binding/>
@@ -1135,15 +1538,6 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>NS4FX.decks[1].padMode.pad_autoloop.input</key>
-                <status>0x94</status>
-                <midino>0x0D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel2]</group>
                 <key>NS4FX.decks[2].padMode.pad_autoloop.input</key>
                 <status>0x95</status>
@@ -1207,9 +1601,90 @@
                 </options>
             </control>
             <control>
+                <group>[Channel2]</group>
+                <key>NS4FX.decks[2].padMode.pad_slicer.input</key>
+                <status>0x95</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>NS4FX.decks[3].padMode.pad_slicer.input</key>
+                <status>0x96</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>NS4FX.decks[4].padMode.pad_slicer.input</key>
+                <status>0x97</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>NS4FX.decks[1].padMode.pad_scratchbanks.input</key>
                 <status>0x94</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NS4FX.decks[2].padMode.pad_slicer.input</key>
+                <status>0x95</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NS4FX.decks[2].padMode.pad_scratchbanks.input</key>
+                <status>0x95</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>NS4FX.decks[3].padMode.pad_slicer.input</key>
+                <status>0x96</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>NS4FX.decks[3].padMode.pad_scratchbanks.input</key>
+                <status>0x96</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>NS4FX.decks[4].padMode.pad_slicer.input</key>
+                <status>0x97</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>NS4FX.decks[4].padMode.pad_scratchbanks.input</key>
+                <status>0x97</status>
                 <midino>0x0F</midino>
                 <options>
                     <script-binding/>
@@ -1613,46 +2088,6 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>start</key>
-                <description>Back to start</description>
-                <status>0x84</status>
-                <midino>0x19</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>start</key>
-                <description>Back to start</description>
-                <status>0x85</status>
-                <midino>0x19</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel3]</group>
-                <key>start</key>
-                <description>Back to start</description>
-                <status>0x86</status>
-                <midino>0x19</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel4]</group>
-                <key>start</key>
-                <description>Back to start</description>
-                <status>0x87</status>
-                <midino>0x19</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
                 <key>NS4FX.decks[1].transport_pad_1.input</key>
                 <status>0x94</status>
                 <midino>0x18</midino>
@@ -1837,46 +2272,6 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>back</key>
-                <description>Rewind</description>
-                <status>0x84</status>
-                <midino>0x1A</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>back</key>
-                <description>Rewind</description>
-                <status>0x85</status>
-                <midino>0x1A</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel3]</group>
-                <key>back</key>
-                <description>Rewind</description>
-                <status>0x86</status>
-                <midino>0x1A</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel4]</group>
-                <key>back</key>
-                <description>Rewind</description>
-                <status>0x87</status>
-                <midino>0x1A</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
                 <key>NS4FX.decks[1].transport_pad_3.input</key>
                 <description>Rewind</description>
                 <status>0x94</status>
@@ -1985,46 +2380,6 @@
                 <midino>0x1A</midino>
                 <options>
                     <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>fwd</key>
-                <description>Forward</description>
-                <status>0x84</status>
-                <midino>0x1B</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>fwd</key>
-                <description>Forward</description>
-                <status>0x85</status>
-                <midino>0x1B</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel3]</group>
-                <key>fwd</key>
-                <description>Forward</description>
-                <status>0x86</status>
-                <midino>0x1B</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel4]</group>
-                <key>fwd</key>
-                <description>Forward</description>
-                <status>0x87</status>
-                <midino>0x1B</midino>
-                <options>
-                    <normal/>
                 </options>
             </control>
             <control>
