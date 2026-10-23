@@ -207,6 +207,8 @@
                 <value label="1 beat">1</value>
                 <value label="1/2 beat" default="true">0.5</value>
             </option>
+            <option label="Use transport pads for ping-pong rolls in Loop Roll mode" variable="useLoopRollPingPong" type="boolean" default="false"
+                description="When enabled, transport pads (1-4) function as pads 5-8 in Loop Roll mode, matching the durations of pads 1-4 with ping-pong stereo panning (odd loop = Left, even loop = Right)."/>
         </group>
         <group label="Stems">
             <option label="Control stems with Slicer pads" variable="useSlicerAsStems" type="boolean" default="true"
