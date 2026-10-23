@@ -1913,6 +1913,10 @@ NS4FX.Deck = function(number, midi_chan) {
         if (this.padmode_str === "roll") {
             NS4FX.stopLoopRollPingPong(this.number);
         }
+        if (this.padmode_str === "pitchplay") {
+            // Restore pitch to original value when exiting pitch play mode
+            engine.setValue(this.group, "pitch_adjust", this.originalPitch !== undefined ? this.originalPitch : 0);
+        }
         NS4FX.dbg(`Deck ${this.number} change_padmode: from ${this.padmode_str} to ${padmode}`);
         this.padmode_str = padmode;
         // This is the main pad mode switching logic.
@@ -2175,9 +2179,16 @@ NS4FX.Deck = function(number, midi_chan) {
             midi: [0x94 + midi_chan, 0x02], // MIDI address for Pitch Play mode
             input: function(_channel, _control, value, _status) {
                 if (value === 0x7F) {
-                    this.groupContainer.turnOffOtherButtons(this);
-                    this.output(1);
-                    deck.change_padmode("pitchplay");
+                    if (deck.padmode_str === "pitchplay") {
+                        // Reset pitch adjustment when already in Pitch Play mode
+                        NS4FX.dbg("[PitchPlay] Already in PitchPlay mode, resetting pitch_adjust to 0 on deck " + deck.number);
+                        engine.setValue(deck.group, "pitch_adjust", 0);
+                        deck.originalPitch = 0.0;
+                    } else {
+                        this.groupContainer.turnOffOtherButtons(this);
+                        this.output(1);
+                        deck.change_padmode("pitchplay");
+                    }
                 }
             },
             output: function(value) {
@@ -2331,15 +2342,10 @@ NS4FX.Deck = function(number, midi_chan) {
             reloop: new components.Button({
                 midi: [0x94 + midi_chan, 0x41],
                 input: function(_channel, _control, value, _status) {
-                    NS4FX.dbg("[RELOOP/ROLL] Shift+Loop On/Off pressed on deck " + deck.number + " with value: " + value + " for group: " + this.group);
+                    NS4FX.dbg("[RELOOP] Shift+Loop On/Off pressed on deck " + deck.number + " with value: " + value + " for group: " + this.group);
                     if (value === 0x7F) { // Button pressed
-                        // Activate loop roll over the current beatloop_size
-                        engine.setValue(this.group, "beatlooproll_activate", 1);
-                        this.output(1);
-                    } else if (value === 0x00) { // Button released
-                        // Deactivate loop roll and resume normal playback
-                        engine.setValue(this.group, "beatlooproll_activate", 0);
-                        this.output(0);
+                        // Re-enable previous loop or exit current loop
+                        engine.setValue(this.group, "reloop_toggle", 1);
                     }
                 },
                 output: function(value) {
