@@ -1497,6 +1497,7 @@ NS4FX.Deck = function(number, midi_chan) {
 
     this.pitchPlayCuepoint = 1;
     this.originalPitch = 0.0;
+    this.pitchPlayHeldList = [];
 
     this.pitchplay_buttons = new components.ComponentContainer({
         updateLEDs: function(deckGroup) {
@@ -1559,16 +1560,38 @@ NS4FX.Deck = function(number, midi_chan) {
                 const semitone = semitones[this.number - 1];
 
                 if (value === 0x7F) { // Press
+                    if (!deck.pitchPlayHeldList) {
+                        deck.pitchPlayHeldList = [];
+                    }
+                    // Only capture the baseline original pitch when pressing the first pad in a sequence
+                    if (deck.pitchPlayHeldList.length === 0) {
+                        deck.originalPitch = engine.getValue(group, "pitch_adjust");
+                    }
+                    if (deck.pitchPlayHeldList.indexOf(this.number) === -1) {
+                        deck.pitchPlayHeldList.push(this.number);
+                    }
                     NS4FX.dbg("[PitchPlay] Playing Hotcue " + deck.pitchPlayCuepoint + " at semitone " + semitone);
-                    deck.originalPitch = engine.getValue(group, "pitch_adjust");
                     engine.setValue(group, "pitch_adjust", semitone);
                     engine.setValue(group, "hotcue_" + deck.pitchPlayCuepoint + "_activate", 1);
                 } else { // Release
-                    engine.setValue(group, "hotcue_" + deck.pitchPlayCuepoint + "_activate", 0);
-                    // Seek back to the hotcue position on release
-                    engine.setValue(group, "hotcue_" + deck.pitchPlayCuepoint + "_goto", 1);
-                    engine.setValue(group, "pitch_adjust", deck.originalPitch);
-                    NS4FX.dbg("[PitchPlay] Released Pad " + this.number + ", restored pitch to " + deck.originalPitch);
+                    if (deck.pitchPlayHeldList) {
+                        deck.pitchPlayHeldList = deck.pitchPlayHeldList.filter(function(padNum) {
+                            return padNum !== this.number;
+                        }.bind(this));
+                    }
+                    if (!deck.pitchPlayHeldList || deck.pitchPlayHeldList.length === 0) {
+                        engine.setValue(group, "hotcue_" + deck.pitchPlayCuepoint + "_activate", 0);
+                        // Seek back to the hotcue position on release
+                        engine.setValue(group, "hotcue_" + deck.pitchPlayCuepoint + "_goto", 1);
+                        engine.setValue(group, "pitch_adjust", deck.originalPitch);
+                        NS4FX.dbg("[PitchPlay] All pads released, restored pitch to " + deck.originalPitch);
+                    } else {
+                        // Switch pitch to the most recently pressed pad that remains held
+                        const remainingPad = deck.pitchPlayHeldList[deck.pitchPlayHeldList.length - 1];
+                        const remainingSemitone = semitones[remainingPad - 1];
+                        engine.setValue(group, "pitch_adjust", remainingSemitone);
+                        NS4FX.dbg("[PitchPlay] Pad " + this.number + " released, reverting to held pad " + remainingPad + " at semitone " + remainingSemitone);
+                    }
                 }
             }
         });
@@ -1914,7 +1937,11 @@ NS4FX.Deck = function(number, midi_chan) {
             NS4FX.stopLoopRollPingPong(this.number);
         }
         if (this.padmode_str === "pitchplay") {
-            // Restore pitch to original value when exiting pitch play mode
+            // Restore pitch to original value and release any active cue triggers when exiting pitch play mode
+            if (this.pitchPlayHeldList && this.pitchPlayHeldList.length > 0) {
+                engine.setValue(this.group, "hotcue_" + this.pitchPlayCuepoint + "_activate", 0);
+                this.pitchPlayHeldList = [];
+            }
             engine.setValue(this.group, "pitch_adjust", this.originalPitch !== undefined ? this.originalPitch : 0);
         }
         NS4FX.dbg(`Deck ${this.number} change_padmode: from ${this.padmode_str} to ${padmode}`);
@@ -2184,6 +2211,7 @@ NS4FX.Deck = function(number, midi_chan) {
                         NS4FX.dbg("[PitchPlay] Already in PitchPlay mode, resetting pitch_adjust to 0 on deck " + deck.number);
                         engine.setValue(deck.group, "pitch_adjust", 0);
                         deck.originalPitch = 0.0;
+                        deck.pitchPlayHeldList = [];
                     } else {
                         this.groupContainer.turnOffOtherButtons(this);
                         this.output(1);
