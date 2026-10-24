@@ -10,7 +10,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 namespace {
-const QString kPaththroughShaderPath = QStringLiteral(":/shaders/passthrough.vert");
+const QString kPassthroughShaderPath = QStringLiteral(":/shaders/passthrough.vert");
 } // namespace
 
 namespace allshader {
@@ -69,10 +69,10 @@ bool WaveformRendererTextured::loadShaders() {
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
                 QOpenGLShader::Vertex,
-                kPaththroughShaderPath)) {
+                kPassthroughShaderPath)) {
         qWarning()
                 << "WaveformRendererTextured::loadShaders - compilation failed:"
-                << kPaththroughShaderPath;
+                << kPassthroughShaderPath;
         qDebug() << m_frameShaderProgram->log();
         return false;
     }
@@ -274,12 +274,13 @@ void WaveformRendererTextured::resizeGL(int, int) {
 }
 
 void WaveformRendererTextured::slotWaveformUpdated() {
-    m_textureRenderedWaveformCompletion = 0;
-    // initializeGL not called yet
-    if (!m_frameShaderProgram) {
-        return;
-    }
-    loadTexture();
+    // This slot is invoked from the track's signal, outside of paintGL().
+    // The GL context of this widget is not guaranteed to be current here
+    // (it may be none or the context of another deck), so no GL calls are
+    // allowed. Only mark the texture as outdated; paintGL() reloads it with
+    // the correct context. -1 forces a reload even at completion 0, so the
+    // texture of a previous track is never shown.
+    m_textureRenderedWaveformCompletion = -1;
 }
 
 void WaveformRendererTextured::paintGL() {

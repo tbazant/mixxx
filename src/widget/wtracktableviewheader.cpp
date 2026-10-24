@@ -82,7 +82,10 @@ QString HeaderViewState::saveState() const {
     int size = m_view_state.ByteSize();
 #endif
     QByteArray array(size, '\0');
-    m_view_state.SerializeToArray(array.data(), size);
+    VERIFY_OR_DEBUG_ASSERT(m_view_state.SerializeToArray(array.data(), size)) {
+        qWarning() << "Failed to serialize header view state";
+        return {};
+    }
     return QString(array.toBase64());
 }
 
@@ -288,7 +291,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
     }
 
     const QString headerStateString = pTrackModel->getModelSetting("header_state_pb");
-    if (headerStateString.isNull()) {
+    if (headerStateString.isEmpty()) {
         loadDefaultHeaderState();
     } else {
         // Load the previous header state (stored as serialized protobuf).

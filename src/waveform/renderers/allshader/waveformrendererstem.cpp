@@ -3,6 +3,7 @@
 #include <QFont>
 #include <QImage>
 #include <QOpenGLTexture>
+#include <cmath>
 
 #include "control/controlproxy.h"
 #include "engine/channels/enginedeck.h"
@@ -71,6 +72,11 @@ bool WaveformRendererStem::init() {
 
 #ifndef __SCENEGRAPH__
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    setSplitStemTracks(pWaveformWidgetFactory->isStemSplitTracks());
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::stemSplitTracksChanged,
+            this,
+            &WaveformRendererStem::setSplitStemTracks);
     setReorderOnChange(pWaveformWidgetFactory->isStemReorderOnChange());
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::stemReorderOnChangeChanged,
@@ -138,7 +144,7 @@ bool WaveformRendererStem::preprocessInner() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength());
     const int pixelLength = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
-    const int stripLength = static_cast<int>(static_cast<float>(pixelLength) / kPixelPerStrip);
+    const int stripLength = static_cast<int>(std::ceil(pixelLength / kPixelPerStrip));
     const float invDevicePixelRatio = kPixelPerStrip / devicePixelRatio;
     const float halfStripSize = kPixelPerStrip / 2.0f / devicePixelRatio;
 
@@ -151,7 +157,11 @@ bool WaveformRendererStem::preprocessInner() {
 
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
-            (lastVisualFrame - firstVisualFrame) / static_cast<double>(stripLength);
+            (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
+    if (visualIncrementPerPixel == 0.0) {
+        return false;
+    }
+    const double visualIncrementPerStrip = visualIncrementPerPixel * kPixelPerStrip;
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0);
@@ -183,7 +193,7 @@ bool WaveformRendererStem::preprocessInner() {
                     m_isSlipRenderer ? halfBreadth : halfBreadth + 0.5f},
             {0.f, 0.f, 0.f, 0.f});
 
-    const double maxSamplingRange = visualIncrementPerPixel / 2.0;
+    const double maxSamplingRange = visualIncrementPerStrip / 2.0;
 
     for (int visualIdx = 0; visualIdx < stripLength; visualIdx++) {
         int stemLayer = 0;
@@ -238,21 +248,24 @@ bool WaveformRendererStem::preprocessInner() {
 
                 // Lines are thin rectangles
                 // shadow
+                float height = heightFactor * max;
+                if (m_splitStemTracks) {
+                    height = std::min(height, halfBreadth);
+                }
+                const int yIndex = m_splitStemTracks ? stemIdx : stemLayer;
                 vertexUpdater.addRectangle(
                         {fVisualIdx - halfStripSize,
-                                stemLayer * stemBreadth + halfBreadth -
-                                        heightFactor * max},
+                                yIndex * stemBreadth + halfBreadth - height},
                         {fVisualIdx + halfStripSize,
                                 m_isSlipRenderer
-                                        ? stemLayer * stemBreadth + halfBreadth
-                                        : stemLayer * stemBreadth + halfBreadth +
-                                                heightFactor * max},
+                                        ? yIndex * stemBreadth + halfBreadth
+                                        : yIndex * stemBreadth + halfBreadth + height},
                         {color_r, color_g, color_b, color_a});
             }
             stemLayer++;
         }
 
-        xVisualFrame += visualIncrementPerPixel;
+        xVisualFrame += visualIncrementPerStrip;
     }
 
     DEBUG_ASSERT(reserved == vertexUpdater.index());
