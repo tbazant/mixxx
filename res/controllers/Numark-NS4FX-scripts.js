@@ -956,7 +956,7 @@ NS4FX.Deck = function(number, midi_chan) {
     this.pitchPlayHeldList = [];
 
     this.pitchplay_buttons = new components.ComponentContainer({
-        updateLEDs: function(deckGroup) {
+        updateLEDs: function() {
             NS4FX.dbg(`[PitchPlay] Updating LEDs for deck ${  deck.number}`);
             for (let i = 1; i <= 8; i++) {
                 const button = deck.pitchplay_buttons[i];
@@ -1001,7 +1001,7 @@ NS4FX.Deck = function(number, midi_chan) {
                 const isRoot = (this.number === 1);
                 midi.sendShortMsg(this.midi[0], this.midi[1], isRoot ? 0x7F : 0x01);
             },
-            input: function(channel, control, value, status, group) {
+            input: function(_channel, _control, value, _status, group) {
                 NS4FX.dbg(`[PitchPlay] Pad ${  this.number  } input: value=${  value  }, shift=${  NS4FX.shift}`);
                 const sourceEnabled = engine.getValue(group, `hotcue_${  deck.pitchPlayCuepoint  }_enabled`);
                 if (!sourceEnabled) {
