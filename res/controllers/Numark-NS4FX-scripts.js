@@ -116,7 +116,7 @@ const addPitchPlayRememberToHotcue = function(deckInstance, button) {
             if (value === 0x7F) {
                 const hotcueNumber = this.number;
                 deckInstance.pitchPlayCuepoint = hotcueNumber;
-                NS4FX.dbg("[PitchPlay] Stored PitchPlay source cuepoint updated to Hotcue " + hotcueNumber + " on deck " + deckInstance.number);
+                NS4FX.dbg(`[PitchPlay] Stored PitchPlay source cuepoint updated to Hotcue ${  hotcueNumber  } on deck ${  deckInstance.number}`);
             }
         }
         originalInput.call(button, channel, control, value, status, group);
@@ -957,7 +957,7 @@ NS4FX.Deck = function(number, midi_chan) {
 
     this.pitchplay_buttons = new components.ComponentContainer({
         updateLEDs: function(deckGroup) {
-            NS4FX.dbg("[PitchPlay] Updating LEDs for deck " + deck.number);
+            NS4FX.dbg(`[PitchPlay] Updating LEDs for deck ${  deck.number}`);
             for (let i = 1; i <= 8; i++) {
                 const button = deck.pitchplay_buttons[i];
                 if (button && button.output) {
@@ -979,7 +979,7 @@ NS4FX.Deck = function(number, midi_chan) {
             off: 0x01, // Dimmed
             connect: function() {
                 components.Button.prototype.connect.call(this);
-                this.cue_connection = engine.makeConnection(this.group, "hotcue_" + deck.pitchPlayCuepoint + "_enabled", function() {
+                this.cue_connection = engine.makeConnection(this.group, `hotcue_${  deck.pitchPlayCuepoint  }_enabled`, function() {
                     this.output();
                 }.bind(this));
             },
@@ -991,7 +991,7 @@ NS4FX.Deck = function(number, midi_chan) {
                 }
             },
             output: function() {
-                const sourceEnabled = engine.getValue(this.group, "hotcue_" + deck.pitchPlayCuepoint + "_enabled");
+                const sourceEnabled = engine.getValue(this.group, `hotcue_${  deck.pitchPlayCuepoint  }_enabled`);
                 if (!sourceEnabled) {
                     midi.sendShortMsg(this.midi[0], this.midi[1], 0x00); // Completely off if source cue is empty
                     return;
@@ -1002,10 +1002,10 @@ NS4FX.Deck = function(number, midi_chan) {
                 midi.sendShortMsg(this.midi[0], this.midi[1], isRoot ? 0x7F : 0x01);
             },
             input: function(channel, control, value, status, group) {
-                NS4FX.dbg("[PitchPlay] Pad " + this.number + " input: value=" + value + ", shift=" + NS4FX.shift);
-                const sourceEnabled = engine.getValue(group, "hotcue_" + deck.pitchPlayCuepoint + "_enabled");
+                NS4FX.dbg(`[PitchPlay] Pad ${  this.number  } input: value=${  value  }, shift=${  NS4FX.shift}`);
+                const sourceEnabled = engine.getValue(group, `hotcue_${  deck.pitchPlayCuepoint  }_enabled`);
                 if (!sourceEnabled) {
-                    NS4FX.dbg("[PitchPlay] Active cuepoint " + deck.pitchPlayCuepoint + " is not set. Ignoring.");
+                    NS4FX.dbg(`[PitchPlay] Active cuepoint ${  deck.pitchPlayCuepoint  } is not set. Ignoring.`);
                     return;
                 }
 
@@ -1026,9 +1026,9 @@ NS4FX.Deck = function(number, midi_chan) {
                     if (deck.pitchPlayHeldList.indexOf(this.number) === -1) {
                         deck.pitchPlayHeldList.push(this.number);
                     }
-                    NS4FX.dbg("[PitchPlay] Playing Hotcue " + deck.pitchPlayCuepoint + " at semitone " + semitone);
+                    NS4FX.dbg(`[PitchPlay] Playing Hotcue ${  deck.pitchPlayCuepoint  } at semitone ${  semitone}`);
                     engine.setValue(group, "pitch_adjust", semitone);
-                    engine.setValue(group, "hotcue_" + deck.pitchPlayCuepoint + "_activate", 1);
+                    engine.setValue(group, `hotcue_${  deck.pitchPlayCuepoint  }_activate`, 1);
                 } else { // Release
                     if (deck.pitchPlayHeldList) {
                         deck.pitchPlayHeldList = deck.pitchPlayHeldList.filter(function(padNum) {
@@ -1036,17 +1036,17 @@ NS4FX.Deck = function(number, midi_chan) {
                         }.bind(this));
                     }
                     if (!deck.pitchPlayHeldList || deck.pitchPlayHeldList.length === 0) {
-                        engine.setValue(group, "hotcue_" + deck.pitchPlayCuepoint + "_activate", 0);
+                        engine.setValue(group, `hotcue_${  deck.pitchPlayCuepoint  }_activate`, 0);
                         // Seek back to the hotcue position on release
-                        engine.setValue(group, "hotcue_" + deck.pitchPlayCuepoint + "_goto", 1);
+                        engine.setValue(group, `hotcue_${  deck.pitchPlayCuepoint  }_goto`, 1);
                         engine.setValue(group, "pitch_adjust", deck.originalPitch);
-                        NS4FX.dbg("[PitchPlay] All pads released, restored pitch to " + deck.originalPitch);
+                        NS4FX.dbg(`[PitchPlay] All pads released, restored pitch to ${  deck.originalPitch}`);
                     } else {
                         // Switch pitch to the most recently pressed pad that remains held
                         const remainingPad = deck.pitchPlayHeldList[deck.pitchPlayHeldList.length - 1];
                         const remainingSemitone = semitones[remainingPad - 1];
                         engine.setValue(group, "pitch_adjust", remainingSemitone);
-                        NS4FX.dbg("[PitchPlay] Pad " + this.number + " released, reverting to held pad " + remainingPad + " at semitone " + remainingSemitone);
+                        NS4FX.dbg(`[PitchPlay] Pad ${  this.number  } released, reverting to held pad ${  remainingPad  } at semitone ${  remainingSemitone}`);
                     }
                 }
             }
@@ -1277,7 +1277,7 @@ NS4FX.Deck = function(number, midi_chan) {
         if (this.padmode_str === "pitchplay") {
             // Restore pitch to original value and release any active cue triggers when exiting pitch play mode
             if (this.pitchPlayHeldList && this.pitchPlayHeldList.length > 0) {
-                engine.setValue(this.group, "hotcue_" + this.pitchPlayCuepoint + "_activate", 0);
+                engine.setValue(this.group, `hotcue_${  this.pitchPlayCuepoint  }_activate`, 0);
                 this.pitchPlayHeldList = [];
             }
             engine.setValue(this.group, "pitch_adjust", this.originalPitch !== undefined ? this.originalPitch : 0);
@@ -1516,7 +1516,7 @@ NS4FX.Deck = function(number, midi_chan) {
                 if (value === 0x7F) {
                     if (deck.padmode_str === "pitchplay") {
                         // Reset pitch adjustment when already in Pitch Play mode
-                        NS4FX.dbg("[PitchPlay] Already in PitchPlay mode, resetting pitch_adjust to 0 on deck " + deck.number);
+                        NS4FX.dbg(`[PitchPlay] Already in PitchPlay mode, resetting pitch_adjust to 0 on deck ${  deck.number}`);
                         engine.setValue(deck.group, "pitch_adjust", 0);
                         deck.originalPitch = 0.0;
                         deck.pitchPlayHeldList = [];
