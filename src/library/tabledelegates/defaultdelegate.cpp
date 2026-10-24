@@ -51,7 +51,7 @@ void DefaultDelegate::paintItemBackground(
     painter->fillRect(option.rect, bgBrush);
 }
 
-void DefaultDelegate::setTextColor(
+void DefaultDelegate::setHighlightedTextColor(
         QStyleOptionViewItem& option,
         const QModelIndex& index) const {
     // Get the palette's selected text color
