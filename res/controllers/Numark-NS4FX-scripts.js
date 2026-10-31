@@ -930,6 +930,9 @@ NS4FX.Deck = function(number, midi_chan) {
     }
 
     components.Deck.call(this, number);
+    // components.Deck sets this.currentDeck = "[Channel" + number + "]", but does not set this.group.
+    // Ensure this.group is defined on the deck instance so all deck controls reference the valid group.
+    this.group = this.currentDeck;
 
     // decide whether the current deck holds a track with separated stems
     this.trackHasStems = function() {
@@ -1827,10 +1830,14 @@ NS4FX.Deck = function(number, midi_chan) {
         if (this.padmode_str === "pitchplay") {
             // Restore pitch to original value and release any active cue triggers when exiting pitch play mode
             if (this.pitchPlayHeldList && this.pitchPlayHeldList.length > 0) {
-                    engine.setValue(this.group, `hotcue_${  this.pitchPlayCuepoint  }_activate`, 0);
+                NS4FX.dbg(`[PitchPlay] Exiting pitchplay while pads held. Releasing cue ${this.pitchPlayCuepoint} on ${this.currentDeck}`);
+                engine.setValue(this.currentDeck, `hotcue_${this.pitchPlayCuepoint}_activate`, 0);
                 this.pitchPlayHeldList = [];
             }
-            engine.setValue(this.group, "pitch_adjust", this.originalPitch !== undefined ? this.originalPitch : 0);
+            const restorePitch = this.originalPitch !== undefined ? this.originalPitch : 0.0;
+            NS4FX.dbg(`[PitchPlay] Restoring pitch to ${restorePitch} on ${this.currentDeck}`);
+            engine.setValue(this.currentDeck, "pitch_adjust", restorePitch);
+            this.originalPitch = 0.0;
         }
         NS4FX.dbg(`Deck ${this.number} change_padmode: from ${this.padmode_str} to ${padmode}`);
         this.padmode_str = padmode;
@@ -1877,14 +1884,24 @@ NS4FX.Deck = function(number, midi_chan) {
             }
             buttons = this.scratchbanks_buttons;
         }
-        this.hotcues.forEachComponent(function(component) {
-            component.disconnect();
-        });
+        if (this.hotcues) {
+            this.hotcues.forEachComponent(function(component) {
+                component.disconnect();
+            });
+        }
+        // Protect against modes that don't define a buttons container (like unimplemented modes).
+        // If buttons is undefined, assign an empty container with dummy buttons to prevent uncaught exceptions
+        // when reconnectComponents is called or when pads are pressed.
         if (buttons) {
             this.hotcues = buttons;
             this.hotcues.reconnectComponents();
         } else {
             this.hotcues = new components.ComponentContainer();
+            for (let i = 1; i <= 8; i++) {
+                this.hotcues[i] = new components.Button();
+                const midiNote = (i <= 4) ? (0x13 + i) : (0x18 + (i - 5));
+                midi.sendShortMsg(0x94 + this.midi_chan, midiNote, 0x00);
+            }
         }
 
         // Update all pad mode button LEDs explicitly.
@@ -2096,8 +2113,8 @@ NS4FX.Deck = function(number, midi_chan) {
                 if (value === 0x7F) {
                     if (deck.padmode_str === "pitchplay") {
                         // Reset pitch adjustment when already in Pitch Play mode
-                                NS4FX.dbg(`[PitchPlay] Already in PitchPlay mode, resetting pitch_adjust to 0 on deck ${  deck.number}`);
-                        engine.setValue(deck.group, "pitch_adjust", 0);
+                        NS4FX.dbg(`[PitchPlay] Already in PitchPlay mode, resetting pitch_adjust to 0 on deck ${deck.number}`);
+                        engine.setValue(deck.currentDeck, "pitch_adjust", 0.0);
                         deck.originalPitch = 0.0;
                         deck.pitchPlayHeldList = [];
                     } else {
