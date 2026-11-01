@@ -604,23 +604,6 @@ NS4FX.init = function(id, debug) {
     NS4FX.ignore_deck_switch = true;
     // effects
     NS4FX.effectUnit = new NS4FX.EffectUnit();
-    const effects = [
-        {unit: 1, slot: 1, id: 9, meta: 0.9},
-        {unit: 1, slot: 2, id: 9, meta: 0.1},
-        {unit: 1, slot: 3, id: 10, meta: 1},
-        {unit: 2, slot: 1, id: 8, meta: 1},
-        {unit: 2, slot: 2, id: 12, meta: 1},
-        {unit: 2, slot: 3, id: 18, meta: 1}
-    ];
-
-    effects.forEach(function(effect) {
-        const group = `[EffectRack1_EffectUnit${effect.unit}_Effect${effect.slot}]`;
-        engine.setParameter(group, "meta", effect.meta);
-        engine.setValue(group, "clear", 1);
-        for (let i = 0; i < effect.id; ++i) {
-            engine.setValue(group, "effect_selector", 1);
-        }
-    });
 
     // decks
     NS4FX.decks = new components.ComponentContainer();
