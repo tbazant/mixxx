@@ -284,6 +284,18 @@ const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
                 }
                 return;
             }
+            if (useAdditionalFadercuts && deck.padmode_str === "fadercuts") {
+                if (deck.fadercuts_buttons && deck.fadercuts_buttons[padNumber + 4]) {
+                    deck.fadercuts_buttons[padNumber + 4].input(channel, control, value, status, group);
+                }
+                return;
+            }
+            if (useAdditionalScratchbanks && deck.padmode_str === "scratchbanks") {
+                if (deck.scratchbanks_buttons && deck.scratchbanks_buttons[padNumber + 4]) {
+                    deck.scratchbanks_buttons[padNumber + 4].input(channel, control, value, status, group);
+                }
+                return;
+            }
             NS4FX.dbg(`Transport pad ${padNumber} on deck ${deck.number} pressed with value ${value}`);
             const isHotcueModeForTransport = useAdditionalHotcues && deck.padmode_str === "hotcue";
 
