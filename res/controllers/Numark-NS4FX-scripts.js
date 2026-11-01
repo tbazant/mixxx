@@ -245,6 +245,96 @@ const createStemPadConfig = function(deckInstance, padStateProperty, stemNumber,
     };
 };
 
+/**
+ * Creates the configuration object for a stem effect pad (pads 5-8 in stems mode).
+ * Tapping toggles quick effect on/off for the stem; holding allows controlling effect super1 via browse knob.
+ * Shift + holding allows selecting quick effect preset via browse knob.
+ *
+ * @param {object} deckInstance - The NS4FX.Deck instance.
+ * @param {string} padStateProperty - The name of the property on the deck object that holds the state for this pad.
+ * @param {number} stemNumber - Stem index (1-4).
+ * @param {object} midiDetails - Object with channel and note.
+ */
+const createStemEffectPadConfig = function(deckInstance, padStateProperty, stemNumber, midiDetails) {
+    const fullMidi = [0x94 + midiDetails.channel, midiDetails.note];
+
+    return {
+        midi: fullMidi,
+        type: components.Button.prototype.types.toggle,
+        inKey: "enabled", // quick effect enabled
+        group: `[QuickEffectRack1_[Channel${deckInstance.number}_Stem${stemNumber}]]`,
+        on: 0x7F,
+        off: 0x01,
+        output: function(value) {
+            if (deckInstance[padStateProperty].isHeldForEffectVolume) {
+                return;
+            }
+            midi.sendShortMsg(this.midi[0], this.midi[1], value ? this.on : this.off);
+        },
+        connect: function() {
+            components.Button.prototype.connect.call(this);
+            const stemGroup = `[QuickEffectRack1_[Channel${deckInstance.number}_Stem${stemNumber}]]`;
+            const buttonInstance = this;
+            this.effect_enabled_connection = engine.makeConnection(stemGroup, "enabled", function(value) {
+                const isEnabled = (value === 1);
+                const ledValue = isEnabled ? buttonInstance.on : buttonInstance.off;
+                midi.sendShortMsg(buttonInstance.midi[0], buttonInstance.midi[1], ledValue);
+            });
+            this.effect_enabled_connection.trigger();
+        },
+        disconnect: function() {
+            components.Button.prototype.disconnect.call(this);
+            if (this.effect_enabled_connection) {
+                this.effect_enabled_connection.disconnect();
+                this.effect_enabled_connection = null;
+            }
+        },
+        input: function input(_channel, _control, value, _status) {
+            const padState = deckInstance[padStateProperty];
+
+            // If shift is held, we enter a mode to select the effect for the stem.
+            if (NS4FX.shift) {
+                if (value === 0x7F) { // Shift + Press
+                    padState.isHeldForEffectSelector = true;
+                } else { // Shift + Release
+                    padState.isHeldForEffectSelector = false;
+                }
+                // When shift is held, we don't want to trigger the normal tap/hold logic.
+                return;
+            }
+
+            if (value === 0x7F) { // Button pressed
+                padState.isHeldForEffectVolume = false; // Reset on each press
+                if (padState.shiftTimerId) {
+                    engine.stopTimer(padState.shiftTimerId);
+                }
+                const localTimerId = engine.beginTimer(250, function() { // 250ms hold threshold
+                    if (padState.shiftTimerId === localTimerId) {
+                        padState.isHeldForEffectVolume = true;
+                        NS4FX.dbg(`Stem effect pad ${stemNumber} on deck ${deckInstance.number} HELD.`);
+                        padState.shiftTimerId = null;
+                    }
+                }, true); // one-shot timer
+                padState.shiftTimerId = localTimerId;
+            } else { // Button released
+                if (padState.shiftTimerId) {
+                    engine.stopTimer(padState.shiftTimerId);
+                    padState.shiftTimerId = null;
+                }
+                if (!padState.isHeldForEffectVolume) {
+                    NS4FX.dbg(`Stem effect pad ${stemNumber} on deck ${deckInstance.number} TAPPED.`);
+                    const quickEffectGroup = `[QuickEffectRack1_[Channel${deckInstance.number}_Stem${stemNumber}]]`;
+                    const currentEffectState = engine.getValue(quickEffectGroup, "enabled");
+                    engine.setValue(quickEffectGroup, "enabled", !currentEffectState);
+                }
+                padState.isHeldForEffectVolume = false;
+                // Also reset the effect selector hold state on release.
+                padState.isHeldForEffectSelector = false;
+            }
+        }
+    };
+};
+
 // Helper function for Pitch Play: stores the selected hotcue number when triggered in hotcue mode.
 const addPitchPlayRememberToHotcue = function(deckInstance, button) {
     const originalInput = button.input;
@@ -281,6 +371,14 @@ const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
             if (deck.padmode_str === "pitchplay") {
                 if (deck.pitchplay_buttons && deck.pitchplay_buttons[padNumber + 4]) {
                     deck.pitchplay_buttons[padNumber + 4].input(channel, control, value, status, group);
+                }
+                return;
+            }
+            // If we're using slicer for stems, and the current pad mode is stems,
+            // these pads are handled by the stem effect buttons, so we delegate the event.
+            if (useSlicerAsStems && useAdditionalStemEffects && deck.padmode_str === "stems") {
+                if (deck.stems_buttons && deck.stems_buttons[padNumber + 4]) {
+                    deck.stems_buttons[padNumber + 4].input(channel, control, value, status, group);
                 }
                 return;
             }
@@ -927,12 +1025,6 @@ NS4FX.Deck = function(number, midi_chan) {
     this.active = (number === 1 || number === 2);
 
     // This is necessary for the hold-for-volume/effect functionality.
-    if (useSlicerAsStems) {
-        // Add isHeldForEffectSelector to track the new SHIFT+hold state.
-        this.stemPad1 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
-        this.stemPad2 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
-        this.stemPad3 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
-        this.stemPad4 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
     if (useSlicerAsStems) {
         // Add isHeldForEffectSelector to track the new SHIFT+hold state.
         this.stemPad1 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
@@ -2044,7 +2136,6 @@ NS4FX.Deck = function(number, midi_chan) {
 
     this.stems_buttons = new components.ComponentContainer();
     if (useSlicerAsStems) {
-    if (useSlicerAsStems) {
         for (let i = 1; i <= 4; ++i) {
             this.stems_buttons[i] = new components.Button(createStemPadConfig(deck, `stemPad${i}`, i, {
                 channel: midi_chan,
@@ -2165,12 +2256,6 @@ NS4FX.Deck = function(number, midi_chan) {
                     } else {
                         deck.change_padmode("slicer");
                     }
-                    if (useSlicerAsStems) {
-                        NS4FX.dbg(`Switching to stems mode on deck ${deck.number}`);
-                        deck.change_padmode("stems");
-                    } else {
-                        deck.change_padmode("slicer");
-                    }
                 }
             },
             output: function(value) {
@@ -2210,8 +2295,6 @@ NS4FX.Deck = function(number, midi_chan) {
     for (const button in this.padMode) {
         if (this.padMode[button] instanceof components.Button) {
             this.padMode[button].groupContainer = this.padMode; // Set container reference
-        }
-    }
         }
     }
 
