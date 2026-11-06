@@ -394,6 +394,13 @@ const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
                 }
                 return;
             }
+            // When ping-pong loop roll is enabled and the deck is in roll mode,
+            // transport pads (CUE, START, BACK, FWD / pads 5-8) trigger ping-pong loop rolls
+            if (useLoopRollPingPong && deck.padmode_str === "roll") {
+                NS4FX.dbg(`[PINGPONG] Transport pad ${padNumber} on deck ${deck.number} triggered in roll mode (value ${value})`);
+                NS4FX.handleLoopRollPingPong(deck.number, padNumber, value);
+                return;
+            }
             NS4FX.dbg(`Transport pad ${padNumber} on deck ${deck.number} pressed with value ${value}`);
             const isHotcueModeForTransport = useAdditionalHotcues && deck.padmode_str === "hotcue";
 
@@ -1977,6 +1984,10 @@ NS4FX.Deck = function(number, midi_chan) {
             NS4FX.dbg(`[PitchPlay] Restoring pitch to ${restorePitch} on ${this.currentDeck}`);
             engine.setValue(this.currentDeck, "pitch_adjust", restorePitch);
             this.originalPitch = 0.0;
+        }
+        if (NS4FX.activePingPong && NS4FX.activePingPong.deckNumber === this.number) {
+            NS4FX.dbg(`[PINGPONG] Exiting roll mode while ping-pong active on Deck ${this.number}. Stopping ping-pong roll.`);
+            NS4FX.stopLoopRollPingPong(this.number);
         }
         NS4FX.dbg(`Deck ${this.number} change_padmode: from ${this.padmode_str} to ${padmode}`);
         this.padmode_str = padmode;
